@@ -4,7 +4,7 @@
 
 <head>
     <meta charset="utf-8">
-    <meta name="keywords" content="设计模式原则, payne的博客">
+    <meta name="keywords" content="jvm类加载器概述, payne的博客">
     <meta name="description" content="">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
@@ -16,7 +16,7 @@
     <!-- Global site tag (gtag.js) - Google Analytics -->
 
 
-    <title>设计模式原则 | payne的博客</title>
+    <title>jvm类加载器概述 | payne的博客</title>
     <link rel="icon" type="image/png" href="/favicon.png">
 
     <link rel="stylesheet" type="text/css" href="/libs/awesome/css/all.css">
@@ -308,12 +308,12 @@
 
 
 
-<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/3.jpg')">
+<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/7.jpg')">
     <div class="container" style="right: 0px;left: 0px;">
         <div class="row">
             <div class="col s12 m12 l12">
                 <div class="brand">
-                    <h1 class="description center-align post-title">设计模式原则</h1>
+                    <h1 class="description center-align post-title">jvm类加载器概述</h1>
                 </div>
             </div>
         </div>
@@ -458,7 +458,12 @@
         <hr class="clearfix">
         <div class="card-content article-card-content">
             <div id="articleContent">
-                <h2 id="设计模式的六大原则"><a href="#设计模式的六大原则" class="headerlink" title="设计模式的六大原则"></a>设计模式的六大原则</h2><h3 id="1、开闭原则（Open-Close-Principle）"><a href="#1、开闭原则（Open-Close-Principle）" class="headerlink" title="1、开闭原则（Open Close Principle）"></a>1、开闭原则（Open Close Principle）</h3><h3 id="2、里氏代换原则（Liskov-Substitution-Principle）"><a href="#2、里氏代换原则（Liskov-Substitution-Principle）" class="headerlink" title="2、里氏代换原则（Liskov Substitution Principle）"></a>2、里氏代换原则（Liskov Substitution Principle）</h3><h3 id="3、依赖倒转原则（Dependence-Inversion-Principle）"><a href="#3、依赖倒转原则（Dependence-Inversion-Principle）" class="headerlink" title="3、依赖倒转原则（Dependence Inversion Principle）"></a>3、依赖倒转原则（Dependence Inversion Principle）</h3><h3 id="4、接口隔离原则（Interface-Segregation-Principle）"><a href="#4、接口隔离原则（Interface-Segregation-Principle）" class="headerlink" title="4、接口隔离原则（Interface Segregation Principle）"></a>4、接口隔离原则（Interface Segregation Principle）</h3><h3 id="5、迪米特法则，又称最少知道原则（Demeter-Principle）"><a href="#5、迪米特法则，又称最少知道原则（Demeter-Principle）" class="headerlink" title="5、迪米特法则，又称最少知道原则（Demeter Principle）"></a>5、迪米特法则，又称最少知道原则（Demeter Principle）</h3><h3 id="6、合成复用原则（Composite-Reuse-Principle）"><a href="#6、合成复用原则（Composite-Reuse-Principle）" class="headerlink" title="6、合成复用原则（Composite Reuse Principle）"></a>6、合成复用原则（Composite Reuse Principle）</h3>
+                <h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><ul>
+<li>类加载器子系统负责从文件系统或者网络中加载class文件，class文件在文件开头有特定的文件标识。</li>
+<li>ClassLoader只负责class文件的加载，至于它是否可以运行，则由Execution Engine决定</li>
+<li>加载的类信息存放于一块称为方法区的内存空间，除了类的信息外，方法区中还会存放运行时常量池信息,可能还包括字符串字面量和数字常量（这部分常量信息是Class文件中常量池部分的内存映射）</li>
+</ul>
+
             </div>
             <hr/>
 
@@ -483,7 +488,7 @@
                     </i>
                 </span>
                 <span class="reprint-info">
-                    <a href="https://paynezh.github.io/2020/09/15/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E5%8E%9F%E5%88%99/">https://paynezh.github.io/2020/09/15/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E5%8E%9F%E5%88%99/</a>
+                    <a href="https://paynezh.github.io/2020/09/15/jvm%E7%B1%BB%E5%8A%A0%E8%BD%BD%E5%99%A8%E6%A6%82%E8%BF%B0/">https://paynezh.github.io/2020/09/15/jvm%E7%B1%BB%E5%8A%A0%E8%BD%BD%E5%99%A8%E6%A6%82%E8%BF%B0/</a>
                 </span>
             </div>
             <div class="reprint__notice">
@@ -686,9 +691,10 @@
 <article id="prenext-posts" class="prev-next articles">
     <div class="row article-row">
         
-        <div class="article col s12 m6" data-aos="fade-up">
+        <div class="article col s12 m6" data-aos="fade-up" data-aos="fade-up">
             <div class="article-badge left-badge text-color">
-                <i class="fas fa-chevron-left"></i>&nbsp;上一篇</div>
+                <i class="far fa-dot-circle"></i>&nbsp;本篇
+            </div>
             <div class="card">
                 <a href="/2020/09/15/jvm%E7%B1%BB%E5%8A%A0%E8%BD%BD%E5%99%A8%E6%A6%82%E8%BF%B0/">
                     <div class="card-image">
@@ -709,9 +715,9 @@ ClassLoader只负责class文件的加载，至于它是否可以运行，则由E
                         
                     </div>
                     <div class="publish-info">
-                        <span class="publish-date">
-                            <i class="far fa-clock fa-fw icon-date"></i>2020-09-15
-                        </span>
+                            <span class="publish-date">
+                                <i class="far fa-clock fa-fw icon-date"></i>2020-09-15
+                            </span>
                         <span class="publish-author">
                             
                             <i class="fas fa-user fa-fw"></i>
@@ -720,6 +726,7 @@ ClassLoader只负责class文件的加载，至于它是否可以运行，则由E
                         </span>
                     </div>
                 </div>
+
                 
             </div>
         </div>
@@ -727,7 +734,7 @@ ClassLoader只负责class文件的加载，至于它是否可以运行，则由E
         
         <div class="article col s12 m6" data-aos="fade-up">
             <div class="article-badge right-badge text-color">
-                本篇&nbsp;<i class="far fa-dot-circle"></i>
+                下一篇&nbsp;<i class="fas fa-chevron-right"></i>
             </div>
             <div class="card">
                 <a href="/2020/09/15/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E5%8E%9F%E5%88%99/">
@@ -757,7 +764,6 @@ ClassLoader只负责class文件的加载，至于它是否可以运行，则由E
                         </span>
                     </div>
                 </div>
-
                 
             </div>
         </div>
