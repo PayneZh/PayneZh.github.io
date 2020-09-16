@@ -2,6 +2,7 @@
 title: jvm类加载器概述
 date: 2020-09-15 15:53:04
 tags: java基础
+categories: 编程
 ---
 # 概述
 - 类加载器子系统负责从文件系统或者网络中加载class文件，class文件在文件开头有特定的文件标识。
