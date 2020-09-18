@@ -48,3 +48,30 @@ categories: 编程
 4. ＜clinit＞()不同于类的构造器。（关联：构造器是虚拟机视角下的＜init＞()）
 5. 若该类具有父类，JVM会保证子类的＜clinit＞()执行前，父类的＜clinit＞()已经执行完毕
 6. 虚拟机必须保证一个类的＜clinit＞()方法在多线程下被同步加锁
+
+## 类加载器的分类
+- JVM支持两种类型的类加载器，分别为引导类加载器（Bootstrap ClassLoader）和自定义类加载器（User-Defined ClassLoader).
+- 从概念上来讲，自定义类加载器一般指的是程序中由开发人员自定义的一类类加载器，但是java虚拟机规范却没有这么定义，而是**将所有派生于抽象类ClassLoader的类加载器都划分为自定义类加载器**
+- 无论类加载器的类型如何划分，在程序中我们最常见的类加载器始终只有3个，如下所示：![图1](https://raw.githubusercontent.com/PayneZh/MarkDownPhotos/master/res/%E7%B1%BB%E5%8A%A0%E8%BD%BD%E5%99%A8%E5%88%86%E7%B1%BB.jpg)
+- 自定义类加载器继承关系如下所示：![图2](https://github.com/PayneZh/MarkDownPhotos/raw/master/res/%E8%87%AA%E5%AE%9A%E4%B9%89%E7%B1%BB%E5%8A%A0%E8%BD%BD%E5%99%A8%E7%BB%A7%E6%89%BF%E5%85%B3%E7%B3%BB.jpg)
+
+### 启动类加载器（BootStrapClassLoader） 
+- 这个类加载器使用C/C++语言实现的,嵌套在JVM内部
+- 它用来加载Java的核心库（JAVA_HOME/jre/lib/rt.jar、resource.jar或sun.boot.class.path路径下的内容），用于提供JVM自身需要的类
+- 并不继承自java.lang.ClassLoader,没有父加载器
+- 加载扩展类的应用类加载器，并指定为他们的父类加载器
+- 出于安全考虑，Bootstrap启动类加载器只加载包名为java、javax、sun等开头的类
+
+### 扩展类加载器（ExtensionClassLoader)
+- Java语言编写，由sun.misc.Launcher$ExtClassLoader实现
+- 派生于ClassLoader类
+- 父类加载器为启动类加载器
+- 从java.ext.dirs系统属性所指定的目录中加载类库，或从JDK的安装目录的jre/lib/ext子目录（扩展目录）下加载类库。如果用户创建的JAR放在此目录下，也会自动由扩展类加载器加载。
+
+### 应用程序类加载器（AppClassLoader)
+- java语言编写，由sum.misc.Launcher$AppClassLoader实现
+- 派生于ClassLoader类
+- 父类加载器为扩展类加载器
+- 它负责加载环境变量classpath或系统属性java.class.path指定路径下的类库
+- 该类加载是程序中默认的类加载器，一般来说，Java应用的类都是由它来完成加载
+- 通过ClassLoader.getSystemClassLoader()方法可以获取到该类加载器
