@@ -75,3 +75,25 @@ categories: 编程
 - 它负责加载环境变量classpath或系统属性java.class.path指定路径下的类库
 - 该类加载是程序中默认的类加载器，一般来说，Java应用的类都是由它来完成加载
 - 通过ClassLoader.getSystemClassLoader()方法可以获取到该类加载器
+
+### 用户自定义类加载器
+- 在Java的日常应用程序开发中，类的加载几乎是由上述3种类加载器相互配合执行的，在必要时，我们还可以自定义类加载器，来定制类的加载方式。
+- 为什么要自定义类加载器
+	1. 隔离加载类
+	2. 修改类加载的方式
+	3. 扩展加载源
+	4. 防止源码泄露 
+- 实现步骤
+1. 开发人员可以通过继承抽象类java.lang.ClassLoader类的方式，实现自己的类加载器，以满足一些特殊的需求
+2. 在JDK1.2之前，在自定义类加载器时，总会去继承ClassLoader类并重写loadClass（）方法，从而实现自定义的类加载类，但是在JDK1.2之后已不再建议用户去覆盖loadClass（）方法，而是建议把自定义的类加载逻辑写在findClass（）方法中
+3. 在编写自定义类加载器时，如果没有太过于复杂的需求，可以直接继承URLClassLoader类，这样就可以避免自己去编写findClass（）方法及其获取字节码流的方式，使自定义类加载器编写更加简洁。
+
+## 获取ClassLoader的途径
+1. 获取当前类的ClassLoader
+	clazz.getClassLoader（）
+2. 获取当前线程上下文的ClassLoader
+	Thread.currentThread（）.getContextClassLoader（）
+3. 获取系统的ClassLoader
+	ClassLoader.getSystemClassLoader（）
+4. 获取调用者的ClassLoader
+	DriverManager.getCallerClassLoader（）
