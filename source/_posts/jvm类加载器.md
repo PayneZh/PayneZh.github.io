@@ -5,6 +5,7 @@ tags: java基础
 categories: 编程
 ---
 # 概述
+
 - 类加载器子系统负责从文件系统或者网络中加载class文件，class文件在文件开头有特定的文件标识。
 - ClassLoader只负责class文件的加载，至于它是否可以运行，则由Execution Engine决定
 - 加载的类信息存放于一块称为方法区的内存空间，除了类的信息外，方法区中还会存放运行时常量池信息,可能还包括字符串字面量和数字常量（这部分常量信息是Class文件中常量池部分的内存映射）
@@ -12,9 +13,11 @@ categories: 编程
 # 详述
 
 ## 类加载过程包括
+
 加载->链接（验证->准备->解析）->初始化
 
 ### 加载
+
 1. 通过一个类的全限定名获取定义此类的二级制字节流
 2. 将这个字节流所代表的静态存储结构转化为方法区的运行是数据结构
 3. 在内存中生成一个代表这个类的java.lang.Class对象，作为方法区这个类的各种数据的访问入口
@@ -28,6 +31,7 @@ categories: 编程
  - 从加密文件中获取，典型的防Class文件被反编译的保护措施
 
 ### 链接
+
 1. 验证
  - 目的在于确保Class文件的字节流中包含信息符合当前虚拟机要求，保证被加载类的正确性，不会危害虚拟机的自身安全
  - 主要包括四种验证：文件格式验证,元数据验证，字节码验证，符号引用验证
@@ -42,6 +46,7 @@ categories: 编程
  - 解析动作主要针对类或接口、字段、类方法、接口方法、方法类型等，对应常量池中的CONSTANT_Class_info、CONSTANT_Fieldref_info、CONSTANT_Methodref_info等
 
 ### 初始化
+
 1. 初始化阶段就是执行类构造方法＜clinit＞()的过程
 2. 此方法不需要定义，是javac编译器自动收集类中的所有类变量的赋值动作和静态代码块中的语句合并而来
 3. 构造器方法中指令按语句在源文件中出现的顺序执行
@@ -50,12 +55,14 @@ categories: 编程
 6. 虚拟机必须保证一个类的＜clinit＞()方法在多线程下被同步加锁
 
 ## 类加载器的分类
+
 - JVM支持两种类型的类加载器，分别为引导类加载器（Bootstrap ClassLoader）和自定义类加载器（User-Defined ClassLoader).
 - 从概念上来讲，自定义类加载器一般指的是程序中由开发人员自定义的一类类加载器，但是java虚拟机规范却没有这么定义，而是**将所有派生于抽象类ClassLoader的类加载器都划分为自定义类加载器**
 - 无论类加载器的类型如何划分，在程序中我们最常见的类加载器始终只有3个，如下所示：![图1](https://raw.githubusercontent.com/PayneZh/MarkDownPhotos/master/res/%E7%B1%BB%E5%8A%A0%E8%BD%BD%E5%99%A8%E5%88%86%E7%B1%BB.jpg)
 - 自定义类加载器继承关系如下所示：![图2](https://github.com/PayneZh/MarkDownPhotos/raw/master/res/%E8%87%AA%E5%AE%9A%E4%B9%89%E7%B1%BB%E5%8A%A0%E8%BD%BD%E5%99%A8%E7%BB%A7%E6%89%BF%E5%85%B3%E7%B3%BB.jpg)
 
-### 启动类加载器（BootStrapClassLoader） 
+### 启动类加载器（BootStrapClassLoader）
+ 
 - 这个类加载器使用C/C++语言实现的,嵌套在JVM内部
 - 它用来加载Java的核心库（JAVA_HOME/jre/lib/rt.jar、resource.jar或sun.boot.class.path路径下的内容），用于提供JVM自身需要的类
 - 并不继承自java.lang.ClassLoader,没有父加载器
@@ -63,12 +70,14 @@ categories: 编程
 - 出于安全考虑，Bootstrap启动类加载器只加载包名为java、javax、sun等开头的类
 
 ### 扩展类加载器（ExtensionClassLoader)
+
 - Java语言编写，由sun.misc.Launcher$ExtClassLoader实现
 - 派生于ClassLoader类
 - 父类加载器为启动类加载器
 - 从java.ext.dirs系统属性所指定的目录中加载类库，或从JDK的安装目录的jre/lib/ext子目录（扩展目录）下加载类库。如果用户创建的JAR放在此目录下，也会自动由扩展类加载器加载。
 
 ### 应用程序类加载器（AppClassLoader)
+
 - java语言编写，由sum.misc.Launcher$AppClassLoader实现
 - 派生于ClassLoader类
 - 父类加载器为扩展类加载器
@@ -77,6 +86,7 @@ categories: 编程
 - 通过ClassLoader.getSystemClassLoader()方法可以获取到该类加载器
 
 ### 用户自定义类加载器
+
 - 在Java的日常应用程序开发中，类的加载几乎是由上述3种类加载器相互配合执行的，在必要时，我们还可以自定义类加载器，来定制类的加载方式。
 - 为什么要自定义类加载器
 	1. 隔离加载类
@@ -89,6 +99,7 @@ categories: 编程
 3. 在编写自定义类加载器时，如果没有太过于复杂的需求，可以直接继承URLClassLoader类，这样就可以避免自己去编写findClass（）方法及其获取字节码流的方式，使自定义类加载器编写更加简洁。
 
 ## 获取ClassLoader的途径
+
 1. 获取当前类的ClassLoader
 	clazz.getClassLoader（）
 2. 获取当前线程上下文的ClassLoader
@@ -99,22 +110,27 @@ categories: 编程
 	DriverManager.getCallerClassLoader（）
 
 ## 双亲委派机制
+
 java虚拟机对class文件采用的是按需加载的方式，也就是说当需要使用该类时才会将它的class文件加载到内存生成class对象。而且加载某个类的class文件时，java虚拟机采用的是**双亲委派模式**，即把请求交由父类处理，它是一种任务委派模式
 
 ### 工作原理
+
 1. 如果一个类加载器收到了类加载请求。它并不会自己先去加载，而是把这个请求委托给父类的加载器去执行
 2. 如果父类加载器还存在其父类加载器，则进一步向上委托，依次递归，请求最终将到达顶层的启动类加载器
 3. 如果父类加载器可以完成类加载任务，就成功返回，倘若父类加载器无法完成此加载任务，子加载器才会尝试自己去加载，这就是双亲委派模式，见图：![图3](https://github.com/PayneZh/MarkDownPhotos/raw/master/res/%E5%8F%8C%E4%BA%B2%E5%A7%94%E6%B4%BE%E6%9C%BA%E5%88%B6.jpg) 
 ![图4](https://github.com/PayneZh/MarkDownPhotos/raw/master/res/%E5%8F%8C%E4%BA%B2%E5%A7%94%E6%B4%BE%E6%9C%BA%E5%88%B6%E5%9B%BE%E8%A7%A3.jpg)
 
 ### 优势
+
 1. 避免类的重复加载
 2. 保护程序安全，防止核心API被随意篡改
 	
 ### 沙箱安全机制
+
 自定义String类，但是在加载自定义String类的时候会率先使用引导类加载器加载，而引导类加载器在加载的过程中会先加载jdk自带的文件（rt.jar包中java\lang\String.class），报错信息说没有main方法，就是因为加载的是rt.jar包中的String类。这样可以保证对java核心源代码的保护，这就是沙箱安全机制。
 
 ## 注意事项
+
 - 在JVM中表示两个class对象是否为同一个类存在两个必要条件
 1. 类的完整类名必须一致，包括包名。
 2. 加载这个类的ClassLoader（指ClassLoader实例对象）必须相同
@@ -122,6 +138,7 @@ java虚拟机对class文件采用的是按需加载的方式，也就是说当�
 - JVM必须知道一个类型是由启动加载器加载的还是由用户类加载器加载的。如果一个类型是由用户类加载器加载的，那么JVM会将这个类加载器的一个引用作为类型信息的一部分保存在方法区中，当解析一个类型到另一个类型的引用的时候，JVM需要保证这两个类型的类加载器是相同的。
 
 ## 类的主动使用和被动使用
+
 主动使用，又分为七种情况：
 1. 创建类的实例
 2. 访问某个类或接口的静态变量，或者对该静态变量赋值
