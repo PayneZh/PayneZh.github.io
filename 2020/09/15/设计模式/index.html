@@ -562,6 +562,39 @@
 <li>针对接口编程，而不是针对实现编程</li>
 <li>为了交互对象之间的松耦合设计而努力</li>
 </ul>
+<h2 id="类图"><a href="#类图" class="headerlink" title="类图"></a>类图</h2><ol>
+<li>依赖关系</li>
+</ol>
+<p>只要是在类中用到了对方，那么他们之间就存在依赖关系，如果没有对方，连编译都通过不了。<br>依赖关系包括（1.如果是类的成员属性，2.如果是方法的返回类型，3.是方法接受的参数类型，4.方法中局部变量使用到<br>2. 泛化关系</p>
+<p>泛化关系实际上就是继承关系，他是<strong>依赖关系的特例</strong></p>
+<ol start="3">
+<li>实现关系</li>
+</ol>
+<p>实现关系实际上就是A类实现B类，他是<strong>依赖关系的特例</strong></p>
+<ol start="4">
+<li>关联关系</li>
+</ol>
+<ul>
+<li>关联关系实际上就是类与类之间的联系，它是<strong>依赖关系的特例</strong>。</li>
+<li>关联关系具有导航型：即双向关系或单向关系。</li>
+<li>关系具有多重性：如“1”（表示有且仅有一个），“0…”（表示0个或多个），“0,1”（表示0个或者一个），“n…m”(表示n到m个都可以)，“m…”表示至少m个<br>单向一对一关系<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">public class Person&#123;</span><br><span class="line">	private IDCard card,</span><br><span class="line">&#125;</span><br><span class="line">public class IDCard&#123;&#125;</span><br></pre></td></tr></table></figure>
+双向一对一关系<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">public class Person&#123;</span><br><span class="line">	private IDCard card;</span><br><span class="line">&#125;</span><br><span class="line">public class IDCard&#123;</span><br><span class="line">	private Person person;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<ol start="5">
+<li>聚合关系</li>
+</ol>
+<p>聚合关系（Aggregation）表示的是整体和部分的关系，整体与部分可以分开，聚合关系是<strong>关联关系的特例</strong>，所以他具有关联的导航性与多重性。<br>如：一台电脑由键盘，显示器，鼠标等组成，组成电脑的各个配件是可以从电脑上分离出来的，使用带空心菱形的实线来表示。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">public class Computer&#123;</span><br><span class="line">	private Mouse mouse;</span><br><span class="line">	private Monitor monitor;</span><br><span class="line">	public void setMouse(Mouse mouse)&#123;</span><br><span class="line">		this.mouse &#x3D; mouse;	</span><br><span class="line">	&#125;</span><br><span class="line">	public void setMonitor(Monitor monitor)&#123;</span><br><span class="line">		this.monitor &#x3D; monitor;	</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<ol start="6">
+<li>组合关系</li>
+</ol>
+<ul>
+<li>组合关系也是整体与部分的关系，但是整体与部分不可以分开。</li>
+<li>再看一个案例：再程序中我们定义实体：Person与IDCard,Head,那么Head和Person就是组合，IDCard和Person就是聚合。</li>
+<li>但是如果在程序中Person实体中定义了对IDCard进行级联删除，即删除Person时连同IDCard一起删除，那么IDCard和Person就是组合了。<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">public class Person&#123;</span><br><span class="line">	private IDCard card;</span><br><span class="line">	private Head head &#x3D; new Head();</span><br><span class="line">&#125;</span><br><span class="line">public class IDCard&#123;&#125;</span><br><span class="line">public class Head&#123;&#125;</span><br></pre></td></tr></table></figure></li>
+</ul>
 
             </div>
             <hr/>
