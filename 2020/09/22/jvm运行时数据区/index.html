@@ -578,6 +578,90 @@
 <li>在Java源文件被编译到字节码文件中时，所有的变量和方法引用都作为符号引用（Symbolic Reference）保存在class文件的常量池里。比如：描述一个方法调用了另外的其他方法时，就是通过常量池中指向方法的符号引用来表示的，那么动态链接的作用就是为了将这些符号引用转换为调用方法的直接引用。</li>
 <li>为什么需要常量池呢？<br>常量池的作用就是为了提供一些符号和常量，便于指令的识别。<br><img src="https://github.com/PayneZh/MarkDownPhotos/raw/master/res/%E5%8A%A8%E6%80%81%E9%93%BE%E6%8E%A5%E7%A4%BA%E6%84%8F%E5%9B%BE.jpg" alt="图7"></li>
 </ul>
+<h4 id="方法的调用"><a href="#方法的调用" class="headerlink" title="方法的调用"></a>方法的调用</h4><p>在JVM中，将符号引用转换为调用方法的直接引用与方法的绑定机制相关</p>
+<ul>
+<li>静态链接：<br>当一个字节码文件被装载进JVM内部时，如果被调用的目标方法在编译期间可知，且运行期保持不变时。这种情况下将调用方法的符号引用转换为直接引用的过程称之为静态链接。</li>
+<li>动态链接：<br>如果被调用的方法在编译期无法被确定下来，也就是说，只能够在程序运行期将调用方法的符号引用转换为直接引用，由于这种引用转换过程具备动态性，因此也就被称之为动态链接。</li>
+</ul>
+<p>对应的方法的绑定机制为：早期绑定和晚期绑定。绑定是一个字段、方法或者类在符号引用被替换为直接引用的过程，这仅仅发生一次。</p>
+<ul>
+<li>早期绑定：<br>早期绑定就是指被调用的目标方法如果在编译期可知，且运行期保持不变时，即可将这个方法与所属的类型进行绑定，这样一来，由于明确了被调用的目标方法究竟是哪一个，因此也就可以使用静态链接的方式将符号引用转换为直接引用。</li>
+<li>晚期绑定：<br>如果被调用的方法在编译期无法被确定下来，只能够在程序运行期根据实际的类型绑定相关的方法，这种绑定方式也就被称之为晚期绑定</li>
+</ul>
+<p>随着高级语言的横空出世，类似于java一样的基于面向对象的编程语言如今越来越多，尽管这类编程语言在语法风格上存在一定的差别，但是他们彼此之间始终保持着一个共性，那就是都支持封装、继承和多态等面向对象特征，既然这一类的编程语言具备多态特性，那么自然也就具备早期绑定和晚期绑定两种绑定方式。</p>
+<p>Java中任何一个普通的方法其实都具备虚函数的特征，他们相当于C++语言中的虚函数（c++中则需要使用关键字virtual来显式定义）。如果在java程序中不希望某个方法拥有虚函数的特征时，则可以使用关键字final来标记这个方法。</p>
+<p>虚方法与非虚方法：</p>
+<ul>
+<li>如果方法再编译期就确定了具体的调用版本，这个版本在运行时是不可变的，这样的方法称为非虚方法。</li>
+<li>静态方法、私有方法、final方法、实例构造器、父类方法都是非虚方法。</li>
+<li>其他方法称为虚方法。</li>
+</ul>
+<p>虚拟机中提供了以下几条方法调用指令</p>
+<ul>
+<li>普通调用指令：</li>
+</ul>
+<ol>
+<li>invokestatic:调用静态方法，解析阶段确定唯一方法版本</li>
+<li>invokespecial:调用<init>方法，私有以及父类方法，解析阶段确定唯一方法版本</li>
+<li>invokevirtual:调用所属虚方法</li>
+<li>invokeinterface:调用接口方法</li>
+</ol>
+<p>动态调用指令<br>5. invokedynamic:动态解析出需要调用的方法，然后执行</p>
+<p>前四条指令固化在虚拟机内部，方法的调用执行不可人为干预，而invokedynamic指令则支持由用户确定方法版本，其中invokestatic指令和invokespecial指令调用的方法称为非虚方法，其余的（final修饰的除外）称为虚方法</p>
+<p>JVM字节码指令集一直比较稳定，一直到java7才增加了一个invokedynamic指令，这是Java为了实现【动态类型语言】支持而做的一种改进，但是在Java7中并没有提供直接生成invokedynamic指令的方法，需要借助ASM这种底层字节码工具来产生invokedynamic指令，直到Java8的Lambda表达式的出现，invokedynamic指令的生成，在Java中才有了直接的生成方式。<br>Java7中增加的动态语言类型支持的本质是对Java虚拟机规范的修改，而不是对Java语言规则的修改，这一块相对来讲比较复杂，增加了虚拟机中的方法调用，最直接的受益者就是运行在Java平台的动态语言的编译器</p>
+<p>动态类型语言和静态类型语言：<br>动态类型语言的静态类型语言两者的区别在于对类型的检查是在编译期还是在运行期，满足前者就是静态类型的语言，反之是动态类型语言，说的再直白一点就是，静态类型语言是判断类型自身的类型信息，动态类型语言是判断变量值的类型信息，变量没有类型信息，变量值才有类型信息，这是动态语言的一个重要特征。</p>
+<p>方法重写：<br>Java语言中方法重写的本质：</p>
+<ol>
+<li>找到操作数栈顶的第一个元素所执行的对象的实际类型，记作C.</li>
+<li>如果在类型C中找到与常量中的描述符合简单名称都相符的方法，则进行访问权限校验，如果通过则返回这个方法的直接引用，查找过程结束；如果不通过，则返回java.lang.IllegalAccessError异常。</li>
+<li>否则，按照继承关系从下往上依次对C的各个父类进行第2步的搜索和验证过程。</li>
+<li>如果始终没有找到合适的方法，则抛java.lang.AbstractMethodError异常。</li>
+</ol>
+<p>IllegalAccessError：程序试图访问或修改一个属性或调用一个方法，这个属性或方法，你没有权限访问，一般的，这个会引起编译器异常。这个错误如果发生在运行时，就说明一个类发生了不兼容的改变。</p>
+<p>虚方法表</p>
+<ol>
+<li>在面向对象的编程中，会很频繁的使用到动态分派，如果在每次动态分派的过程中都要重新在类的方法元数据中搜索合适的目标的话就可能影响到执行效率，因此，为了提高性能，JVM采用在类的方法区建立一个虚方法表（virtual method table）（非虚方法不会出现在表中）来实现，使用索引表来代替查找。</li>
+<li>每个类中都有一个虚方法表，表中存放着各个方法的实际入口。</li>
+<li>那么虚方法表什么时候被创建？<br>虚方法表会在类加载的链接阶段被创建并开始初始化，类的变量初始值准备完成之后，JVM会把该类的方法表也初始化完毕。<br><img src="https://github.com/PayneZh/MarkDownPhotos/raw/master/res/%E8%99%9A%E6%96%B9%E6%B3%95%E8%A1%A8.jpg" alt="图8"></li>
+</ol>
+<h4 id="方法返回地址"><a href="#方法返回地址" class="headerlink" title="方法返回地址"></a>方法返回地址</h4><ul>
+<li>存放调用该方法的pc寄存器的值</li>
+<li>一个方法的结束，有两种方式:1.正常执行完成2.出现未处理的异常，非正常推出</li>
+<li>无论通过哪种方式退出，在方法退出后都返回到该方法被调用的位置。方法正常退出时，调用者的pc计数器的值作为返回地址，即调用该方法的指令的下一条指令的地址。而通过异常退出的，返回地址是要通过异常表来确定。栈帧中一般不会保存这部分信息。</li>
+<li>当一个方法开始执行后，只有两种方式可以退出这个方法：</li>
+</ul>
+<ol>
+<li>执行引擎遇到任意一个方法返回的字节码指令（return),会有返回值传递给上层的方法调用者，简称正常完成出口：</li>
+</ol>
+<p>1). 一个方法在正常调用完成之后究竟需要使用哪一个返回指令还需要根据方法返回值的实际数据类型而定。<br>2). 在字节码指令中，返回指令包含ireturn（当返回值是Boolean，byte,char,short和int类型时使用）、lreturn、freturn、dreturn以及areturn，另外还有一个return指令供声明为void方法、实例初始化方法、类和接口的初始化方法使用。<br>2. 在方法执行的过程中遇到了异常（Exception),并且这个异常没有在方法内进行处理，也就是只要在本方法的异常表中没有搜索到匹配的异常处理器，就会导致方法退出，简称异常完成出口。</p>
+<p>方法执行过程中抛出异常时的异常处理，存储在一个异常处理表，方便在发生异常的时候找到处理异常的代码。</p>
+<ul>
+<li>本质上，方法的退出就是当前栈帧出栈的过程。此时，需要恢复上层方法的局部变量表、操作数栈、将返回值压入调用者栈帧的操作数栈、设置PC寄存器值等，让调用者方法继续执行下去。</li>
+<li>正常完成出口和异常完成出口的区别在于：通过异常完成出口退出的不会给他的上层调用者产生任何的返回值。</li>
+</ul>
+<h4 id="一些附加信息"><a href="#一些附加信息" class="headerlink" title="一些附加信息"></a>一些附加信息</h4><p>栈帧中还允许携带与Java虚拟机实现相关的一些附加信息。例如，对程序调试提供支持的信息。</p>
+<h2 id="本地方法栈"><a href="#本地方法栈" class="headerlink" title="本地方法栈"></a>本地方法栈</h2><ul>
+<li>Java虚拟机栈用于管理Java方法的调用，而本地方法栈用于管理本地方法的调用。</li>
+<li>本地方法栈，也是线程私有的。</li>
+<li>允许被实现成固定或者是可动态扩展的内存大小。（在内存溢出方面是相同的）<br>1). 如果线程请求分配的栈容量超过本地方法栈允许的最大容量，Java虚拟机将会抛出一个StackOverflowError异常。<br>2). 如果本地方法栈可以动态扩展，并且在尝试扩展的时候无法申请到足够的内存，或者在创建新的线程时没有足够的内存去创建对应的本地方法栈，那么Java虚拟机将会抛出一个OutOfMemoryError异常。</li>
+<li>本地方法是使用C语言实现的。</li>
+<li>它的具体做法是Native Method Stack中登记native方法，在Execution Engine执行时加载本地方法库。</li>
+<li>当某个线程调用一个本地方法时，它就进入了一个全新的并且不再受虚拟机限制的世界。它和虚拟机拥有同样的权限<br>1). 本地方法可以通过本地方法接口来访问虚拟机内部的运行时数据区。<br>2). 它甚至可以直接使用本地处理器中的寄存器。<br>3). 直接从本地内存的堆中分配任意数量的内存。</li>
+<li>并不是所有的JVM都支持本地方法。因为Java虚拟机规范并没有明确要求本地方法栈的使用语言、具体实现方式、数据结构等。如果JVM产品不打算支持native方法，也可以无需实现本地方法栈。</li>
+<li>在HotSpot JVM中，直接将本地方法栈和虚拟机栈合二为一。</li>
+</ul>
+<p><img src="https://github.com/PayneZh/MarkDownPhotos/raw/master/res/%E6%9C%AC%E5%9C%B0%E6%96%B9%E6%B3%95%E6%A0%88.jpg" alt="图9"></p>
+<h2 id="堆"><a href="#堆" class="headerlink" title="堆"></a>堆</h2><ul>
+<li>一个JVM实例只存在一个堆内存，堆也是Java内存管理的核心区域。</li>
+<li>Java堆区在JVM启动的时候即被创建。其空间大小也就确定了。是JVM管理的最大一块内存空间（堆内存的大小是可以调节的）。</li>
+<li>《Java虚拟机规范》规定，堆可以处于物理上不连续的内存空间中，但是逻辑上它应该被视为连续的。</li>
+<li>所有的线程共享Java堆，在这里还可以划分线程私有的缓冲区（Thread Local Allocation Buffer,TLAB）。</li>
+<li>《Java虚拟机规范》中对Java堆的描述是：所有的对象实例以及数据都应当在运行时分配在堆上。（The heap is the run-time data area from which memory for all class instances and arrays is allocated）。我要说的是：”几乎”所有的对象实例都在这里分配内存。-从实际使用角度看的。</li>
+<li>数组和对象可能永远不会存储在栈上，因为栈帧中保存引用，这个引用指向对象或者数组在堆中的位置。</li>
+<li>在方法结束后，堆中的对象不会马上被移除，仅仅在垃圾收集的时候才会被移除。</li>
+<li>堆，是GC(Garbage Collection.垃圾收集器)执行垃圾回收的重点区域。</li>
+<li>内部划分：<br>现代垃圾收集器大部分都基于分代收集理论设计，堆空间细分为：<br><img src="https://github.com/PayneZh/MarkDownPhotos/raw/master/res/%E5%A0%86%E7%A9%BA%E9%97%B4%E5%88%92%E5%88%86.jpg" alt="图10"><br><img src="https://github.com/PayneZh/MarkDownPhotos/raw/master/res/%E5%A0%86%E7%A9%BA%E9%97%B4(JDK7).jpg" alt="图11"></li>
+</ul>
 
             </div>
             <hr/>
@@ -810,30 +894,29 @@
 <article id="prenext-posts" class="prev-next articles">
     <div class="row article-row">
         
-        <div class="article col s12 m6" data-aos="fade-up" data-aos="fade-up">
+        <div class="article col s12 m6" data-aos="fade-up">
             <div class="article-badge left-badge text-color">
-                <i class="far fa-dot-circle"></i>&nbsp;本篇
-            </div>
+                <i class="fas fa-chevron-left"></i>&nbsp;上一篇</div>
             <div class="card">
-                <a href="/2020/09/22/jvm%E8%BF%90%E8%A1%8C%E6%97%B6%E6%95%B0%E6%8D%AE%E5%8C%BA/">
+                <a href="/2020/10/07/%E6%9C%AC%E5%9C%B0%E6%96%B9%E6%B3%95/">
                     <div class="card-image">
                         
                         
-                        <img src="/medias/featureimages/13.jpg" class="responsive-img" alt="jvm运行时数据区">
+                        <img src="/medias/featureimages/16.jpg" class="responsive-img" alt="本地方法">
                         
-                        <span class="card-title">jvm运行时数据区</span>
+                        <span class="card-title">本地方法</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
                     <div class="summary block-with-text">
                         
-                            概述内存是非常重要的系统资源，是硬盘和CPU的中间仓库及桥梁，承载着操作系统和应用程序的实时运行。JVM内存布局规定了Java在运行过程中内存申请、分配、管理的策略，保证了JVM的高效稳定运行。不同的JVM对于内存的划分方式和管理机制存在着
+                            概述简单地讲，一个Native Method就是一个Java调用非Java代码的接口。一个Native Method是这样一个Java方法：该方法的实现由非Java语言实现，比如C,这个特征并非Java所特有，很多其它的编程语言都有这一机制
                         
                     </div>
                     <div class="publish-info">
-                            <span class="publish-date">
-                                <i class="far fa-clock fa-fw icon-date"></i>2020-09-22
-                            </span>
+                        <span class="publish-date">
+                            <i class="far fa-clock fa-fw icon-date"></i>2020-10-07
+                        </span>
                         <span class="publish-author">
                             
                             <i class="fas fa-bookmark fa-fw icon-category"></i>
@@ -846,7 +929,6 @@
                         </span>
                     </div>
                 </div>
-
                 
                 <div class="card-action article-tags">
                     
