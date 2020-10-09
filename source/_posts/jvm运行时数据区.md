@@ -248,3 +248,7 @@ IllegalAccessError：程序试图访问或修改一个属性或调用一个方�
 - 数组和对象可能永远不会存储在栈上，因为栈帧中保存引用，这个引用指向对象或者数组在堆中的位置。
 - 在方法结束后，堆中的对象不会马上被移除，仅仅在垃圾收集的时候才会被移除。
 - 堆，是GC(Garbage Collection.垃圾收集器)执行垃圾回收的重点区域。
+- 内部划分：
+现代垃圾收集器大部分都基于分代收集理论设计，堆空间细分为：
+![图10](https://github.com/PayneZh/MarkDownPhotos/raw/master/res/%E5%A0%86%E7%A9%BA%E9%97%B4%E5%88%92%E5%88%86.jpg)
+![图11](https://github.com/PayneZh/MarkDownPhotos/raw/master/res/%E5%A0%86%E7%A9%BA%E9%97%B4(JDK7).jpg)
