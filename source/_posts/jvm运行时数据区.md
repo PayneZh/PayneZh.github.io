@@ -252,3 +252,10 @@ IllegalAccessError：程序试图访问或修改一个属性或调用一个方�
 现代垃圾收集器大部分都基于分代收集理论设计，堆空间细分为：
 ![图10](https://github.com/PayneZh/MarkDownPhotos/raw/master/res/%E5%A0%86%E7%A9%BA%E9%97%B4%E5%88%92%E5%88%86.jpg)
 ![图11](https://github.com/PayneZh/MarkDownPhotos/raw/master/res/%E5%A0%86%E7%A9%BA%E9%97%B4(JDK7).jpg)
+
+### 堆空间大小的设置
+
+- Java堆区用于存储Java对象实例，那么堆的大小在JVM启动时就已经设定好了，大家可以通过选项"-Xmx"和"-Xms"来进行设置。("-Xms"用于表示堆区的起始内存，等价于-XX:InitialHeapSize,"-Xmx"则用于表示堆区的最大内存，等价于-XX:MaxHeapSize)
+- 一旦堆区中的内存大小超过"-Xmx"所指定的最大内存时，将会抛出OutOfMemoryError异常。
+- 通常会将-Xms和-Xmx两个参数配置相同的值，其目的是为了能够在java垃圾回收机制清理完堆区后不需要重新分隔计算堆区的大小，从而提高性能。
+- 默认情况下，初始内存大小：物理电脑内存大小/64 最大内存大小：物理电脑内存大小/4
