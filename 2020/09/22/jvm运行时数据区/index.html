@@ -668,6 +668,37 @@
 <li>通常会将-Xms和-Xmx两个参数配置相同的值，其目的是为了能够在java垃圾回收机制清理完堆区后不需要重新分隔计算堆区的大小，从而提高性能。</li>
 <li>默认情况下，初始内存大小：物理电脑内存大小/64 最大内存大小：物理电脑内存大小/4</li>
 </ul>
+<h3 id="OutOfMemory"><a href="#OutOfMemory" class="headerlink" title="OutOfMemory"></a>OutOfMemory</h3><ul>
+<li>Throwable分为两种Error和Exception，广义上来说这两种都叫异常。</li>
+</ul>
+<h3 id="年轻代与老年代"><a href="#年轻代与老年代" class="headerlink" title="年轻代与老年代"></a>年轻代与老年代</h3><ul>
+<li><p>存储在JVM中的Java对象可以被划分为两类：</p>
+<ol>
+<li>一类是生命周期较短的瞬时对象，这类对象的创建和消亡都非常迅速。</li>
+<li>另外一类对象的生命周期却非常长，在某些极端的情况下还能够与JVM的生命周期保持一致</li>
+</ol>
+</li>
+<li><p>Java堆区进一步细分的话，可以划分为年轻代（YoungGen）和老年代（OldGen)</p>
+</li>
+<li><p>其中年轻代又可以划分为Eden空间、Survivor0空间和Survivor1空间（有时也叫做from区、to区)。<br><img src="https://github.com/PayneZh/MarkDownPhotos/raw/master/res/%E5%A0%86%E7%A9%BA%E9%97%B4%E7%BB%86%E5%88%86.jpg" alt="图12"></p>
+</li>
+<li><p>配置新生代与老年代在堆结构的占比(这些参数开发中一般不会调)</p>
+<ol>
+<li>默认-XX:NewRatio=2,表示新生代占1，老年代占2，新生代占整个堆的1/3.</li>
+<li>可以修改-XX:NewRatio=4,表示新生代占1，老年代占4，新生代占整个堆的1/5.</li>
+</ol>
+</li>
+<li><p>在HotSpot中，Eden空间和另外两个Survivor空间缺省所占的比例是8:1:1.</p>
+</li>
+<li><p>当然开发人员可以通过选项“-XX:SurvivorRatio”调整这个空间比例，比如-XX:SurvivorRatio=8</p>
+</li>
+<li><p>几乎所有的Java对象都是在Eden区被new出来的。</p>
+</li>
+<li><p>绝大部分的Java对象的销毁都在新生代进行了（IBM公司的专门研究表明，新生代中80%的对象都是“朝生夕死”的）。</p>
+</li>
+<li><p>可以使用选项“-Xmn”设置新生代最大内存大小（这个参数一般使用默认值就可以了）。</p>
+</li>
+</ul>
 
             </div>
             <hr/>
