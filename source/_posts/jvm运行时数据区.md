@@ -299,3 +299,16 @@ java.lang.OutOfMemoryError: Java heap space
 总结：
 - 针对幸存者s0,s1区的总结：复制之后有交换，谁空谁是to
 - 关于垃圾回收：频繁在新生区收集，很少在养老区收集，几乎不再永久区/元空间收集。
+
+![图13](https://github.com/PayneZh/MarkDownPhotos/raw/master/res/%E5%AF%B9%E8%B1%A1%E5%88%86%E9%85%8D%E5%9B%BE%E8%A7%A3.jpg)
+
+### 常用调优工具
+
+- JDK命令行
+- Eclipse:Memory Analyzer Tool
+- Jconsole
+- VisualVm
+- Jprofiler
+- Java Flight Recorder
+- GCViewer
+- GC Easy
