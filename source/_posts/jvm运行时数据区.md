@@ -330,7 +330,7 @@ JVM在进行GC时，并非每次都堆上面三个内存区域一起回收的，
     		
 老年代GC(Major GC/Full GC)触发机制：
 - 指发生在老年代的GC，对象从老年代消失时，我们说Major GC或Full GC发生了。
-- 出现了Major GC，经常会伴随至少一次的Minor GC（但非绝对的，在Parallel Scavenge 收集器的收集策略里就有直接进行Major GC的策略选择过程也就是在老年代空间不足时，会先尝试触发Minor GC，如果之后空间还不足，则触发Major GC）
+- 出现了Major GC，经常会伴随至少一次的Minor GC（但非绝对的，在Parallel Scavenge 收集器的收集策略里就有直接进行Major GC的策略选择过程，也就是在老年代空间不足时，会先尝试触发Minor GC，如果之后空间还不足，则触发Major GC）
 - Major GC的速度一般会比Minor GC慢10倍以上，STW的时间更长。
 - 如果Major GC后，内存还不足，就报OOM了
 
