@@ -844,7 +844,7 @@
 </ol>
 <p>装饰器模式在JDK应用</p>
 <p><img src="https://github.com/PayneZh/MarkDownPhotos/raw/master/res/designpattern/inputstream%E7%9A%84%E9%80%82%E9%85%8D%E5%99%A8%E6%A8%A1%E5%BC%8F.jpg" alt="图7"></p>
-<p>public abstract class InputStream implements Closeable{}-是一个抽象类，即Component<br>public class FilterInputStream extends InputStream{ -是一个装饰者类Decorator<br>protected volatile InputStream in -被装饰的对象<br>}<br>class DataInputStream extends FilterInputStream implements DataInput{-FilterInputStream 子类，也继承了被装饰的对象in<br>}</p>
+<p>public abstract class InputStream implements Closeable{}//是一个抽象类，即Component<br>public class FilterInputStream extends InputStream{ -是一个装饰者类Decorator<br>protected volatile InputStream in -被装饰的对象<br>}<br>class DataInputStream extends FilterInputStream implements DataInput{-FilterInputStream 子类，也继承了被装饰的对象in<br>}</p>
 
             </div>
             <hr/>
