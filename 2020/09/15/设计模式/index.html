@@ -837,14 +837,14 @@
 <p>装饰器模式定义<br>装饰器模式，动态的将新功能附加到对象上。在对象功能扩展方面，它比继承更有弹性，装饰器模式也体现了开闭原则（ocp）</p>
 <p>装饰器模式原理</p>
 <ol>
-<li>装饰器模式就像打包一个快递：<br>主体：比如：陶瓷、衣服（Component）-被装饰者<br>包装：比如：报纸填充、塑料薄膜、纸板、木板（Decorator）</li>
+<li>装饰器模式就像打包一个快递：<br>主体：比如：陶瓷、衣服（Component）//被装饰者<br>包装：比如：报纸填充、塑料薄膜、纸板、木板（Decorator）</li>
 <li>Component<br>主体： 比如类似前面的Drink</li>
 <li>ConcreteComponent和Decorator：<br>ConcreteComponent：具体的主体，比如前面的各个单品咖啡<br>Decorator：装饰者，比如各调料</li>
 <li>在如图的Component与ConcreteComponent之间，如果ConcreteComponent类很多，还可以设计一个缓冲层，将共有的部分提取出来，抽象出一个类。<br><img src="https://github.com/PayneZh/MarkDownPhotos/raw/master/res/designpattern/%E8%A3%85%E9%A5%B0%E5%99%A8%E6%A8%A1%E5%BC%8F%E7%B1%BB%E5%9B%BE.jpg" alt="图6"></li>
 </ol>
 <p>装饰器模式在JDK应用</p>
 <p><img src="https://github.com/PayneZh/MarkDownPhotos/raw/master/res/designpattern/inputstream%E7%9A%84%E9%80%82%E9%85%8D%E5%99%A8%E6%A8%A1%E5%BC%8F.jpg" alt="图7"></p>
-<p>public abstract class InputStream implements Closeable{}//是一个抽象类，即Component<br>public class FilterInputStream extends InputStream{ -是一个装饰者类Decorator<br>protected volatile InputStream in -被装饰的对象<br>}<br>class DataInputStream extends FilterInputStream implements DataInput{-FilterInputStream 子类，也继承了被装饰的对象in<br>}</p>
+<p>public abstract class InputStream implements Closeable{}//是一个抽象类，即Component<br>public class FilterInputStream extends InputStream{ //是一个装饰者类Decorator<br>protected volatile InputStream in -被装饰的对象<br>}<br>class DataInputStream extends FilterInputStream implements DataInput{//FilterInputStream 子类，也继承了被装饰的对象in<br>}</p>
 
             </div>
             <hr/>
