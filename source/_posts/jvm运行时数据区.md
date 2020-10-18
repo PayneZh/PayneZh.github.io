@@ -365,3 +365,45 @@ Full GC触发机制：
 - 动态对象年龄判断：如果Survivor区中相同年龄的所有对象大小的总和大于Survivor空间的一半，年龄大于或等于该年龄的对象可以直接进入老年代，无须等到MaxTenuringThreshold中要求的年龄。
 - 空间分配担保：-XX:HandlePromotionFaiure
 
+### 为对象分配内存：TLAB
+
+为什么有TLAB(Thread Loacl Allocation Buffer)?
+- 堆区是线程共享区域，任何线程都可以访问到堆区中的共享数据
+- 由于对象实例的创建在JVM中非常频繁，因此在并发环境下从堆区中划分内存空间是线程不安全的
+- 为避免多个线程操作同一地址，需要使用加锁等机制，进而影响分配速度。
+
+什么是TLAB
+- 从内存模型而不是垃圾收集的角度，对Eden区域继续进行划分，JVM为每个线程分配了一个私有缓存区域，它包含在Eden空间内。
+- 多线程同时分配内存时，使用TLAB可以避免一系列的非线性安全问题，同时还能够提升内存分配的吞吐量，因此我们可以将这种内存分配方式称之为快速分配策略
+- 所有OpenJDK衍生出来的JVM都提供了TLAB的设计。
+- 尽管不是所有的对象实例都能够在TLAB中成功分配内存，但JVM确实是将TLAB作为内存分配的首选。
+- 在程序中，开发人员可以通过选项“-XX:UseTLAB”设置是否开启TLAB空间。
+- 默认情况下，TLAB空间的内存非常小，仅占有整个Eden空间的1%，当然我们可以通过选项“-XX:TLABWasteTargetPercent”设置TLAB空间所占用Eden空间的百分比大小。
+- 一旦对象在TLAB空间分配内存失败时，JVM就会尝试着通过使用加锁机制确保数据操作的原子性，从而直接在Eden空间中分配内存。
+
+![图14](https://github.com/PayneZh/MarkDownPhotos/raw/master/res/TLAB%E5%88%86%E9%85%8D%E8%BF%87%E7%A8%8B.jpg)
+
+### 小结堆空间的参数设置
+
+- 官网说明：
+https://docs.oracle.com/javase/8/docs/technotes/tools/unix/java.html
+- -XX:+PrintFlagsInitial:查看所有的参数的默认初始值
+- -XX:+PrintFlagsFinal:查看所有的参数的最终值（可能会存在修改，不再是初始值）
+- -Xms:初始堆空间内存（默认为物理内存的1/64）
+- -Xmx:最大堆空间内存（默认为物理内存的1/4）
+- -Xmn:设置新生代的大小。（初始值及最大值）
+- -XX:NewRation:配置新生代与老年代在堆结构的占比
+- -XX:SurvivorRatio:设置新生代中Eden和S0/S1空间的比例
+- -XX:MaxTenuringThreshold:设置新生代垃圾的最大年龄
+- -XX:+PrintGCDetails:输出详细的GC处理日志
+打印gc简要信息：-XX:+PrintGC, -verbose:gc
+- -XX:HandlePromotionFailure:是否设置空间分配担保：
+在发生Minor GC之前，虚拟机会检查老年代最大可用的连续空间是否大于新生代所有对象的总空间。
+1. 如果大于，则此次Minor GC是安全的
+2. 如果小于，则虚拟机会查看-XX:HandlePromotionFailure设置值是否允许担保失败。
+- 如果HandlePromotionFailure=true,那么会继续检查老年代最大可用连续空间是否大于历次晋升到老年代的对象的平均大小。
+1). 如果大于，则尝试进行一次Minor GC，但这次Minor GC依然是有风险2的，
+2). 如果小于，则改为进行一次Full GC.
+- 如果HandlePromotionFailure=false,则改为进行一次Full GC。
+
+在JDK6 Update24之后，HandlePromotionFailure参数不会再影响到虚拟机的空间分配担保策略，观察OpenJDK中源码变化，虽然源码中还定义了HandlePromotionFailure参数，但是在代码中已经不会再使用它，JDK6 Update24之后的规则变为只要老年代的连续空间大于新生代对象总大小或者历次晋升的平均大小就会进行Minor GC，否则将进行Full GC.
