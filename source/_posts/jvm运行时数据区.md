@@ -447,4 +447,38 @@ https://docs.oracle.com/javase/8/docs/technotes/tools/unix/java.html
 
 
 2. 同步省略。如果一个对象被发现只能从一个线程被访问到，那么对于这个对象的操作可以不考虑同步。
+
+- 线程同步的代价式相当高的，同步的后果是降低并发性和性能
+- 在动态编译同步块的时候，JIT编译器可以借助逃逸分析来判断同步块所使用的锁对象是否只能够被一个线程访问而没有被发布到其他线程。如果没有，那么JIT编译器在编译这个同步块的时候就会取消对这部分代码的同步。这样就能大大提高并发性和性能。这个取消同步的过程就叫同步省略，也叫锁消除。
+
+![图16](https://github.com/PayneZh/MarkDownPhotos/raw/master/res/%E5%90%8C%E6%AD%A5%E6%B6%88%E9%99%A4%E7%A4%BA%E4%BE%8B.jpg)
+
 3. 分离对象或标量替换。有的对象可能不需要作为一个连续的内存结构存在也可以被访问到。那么对象的部分（或全部）可以不存储在内存。而是存储在CPU寄存器中。
+
+- 标量（Scalar）是指一个无法再分解成更小的数据的数据。Java中的原始数据类型就是标量。
+- 相对的，那些还可以分解的数据叫做聚合量（Aggregate），Java中对象就是聚合量，因为他可以分解成其他聚合量和标量。
+- 在JIT阶段，如果经过逃逸分析，发现一个对象不会被外界访问的话，那么经过JIT优化，就会把这个对象拆解成若干个其中包含的若干个成员变量来代替。这个过程就是标量替换。
+
+```
+    public static void main(String[] args) {
+        alloc();
+    }
+    private static void alloc(){
+        Point point = new Point(1,2);
+        System.out.println("point.x ="+point.x+"; point.y=" + point.y);
+    }
+    class Point{
+        private int x;
+        private int y;
+    }
+```
+以上代码，经过标量替换后，就会变成：
+```
+    private static void alloc(){
+        int x = 1;
+		int y = 2;
+        System.out.println("point.x ="+point.x+"; point.y=" + point.y);
+    }
+```
+可以看到，Point这个聚合量经过逃逸分析后，发现他并没有逃逸，就被替换成两个聚合量了。那么标量替换有什么好处呢？就是可以大大减少堆内存的占用。因为一旦不需要创建对象了，那么就不再需要分配堆内存了。
+标量替换为栈上分配提供了很好的基础。
