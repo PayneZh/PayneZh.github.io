@@ -829,6 +829,52 @@
 </ul>
 <p>1). 选项“-XX:+DoEscapeAnalysis”显式开启逃逸分析<br>2). 通过选项“-XX:+PrintEscapeAnalysis”查看逃逸分析的筛选结果。</p>
 <p>结论：开发中能使用局部变量的，就不要使用在方法外定义</p>
+<p>逃逸分析：代码优化<br>使用逃逸分析，编译器可以对代码做如下优化：</p>
+<ol>
+<li>栈上分配。将堆分配转化为栈分配。如果一个对象在子程序中被分配，要使指向该对象的指针永远不会逃逸，对象可能是栈分配的候选，而不是堆分配。</li>
+</ol>
+<ul>
+<li><p>JIT编译器在编译期间根据逃逸分析的结果，发现如果一个对象并没有逃逸出方法的话，就可能被优化成栈上分配。分配完成后，继续在调用栈内执行，最后线程结束，栈空间被回收，局部变量对象也被回收。这样就无须进行垃圾回收了。</p>
+</li>
+<li><p>常见的栈上分配的场景：在逃逸分析中，已经说明了。分别是给成员变量赋值、方法返回值、实例引用传递。</p>
+</li>
+</ul>
+<ol start="2">
+<li>同步省略。如果一个对象被发现只能从一个线程被访问到，那么对于这个对象的操作可以不考虑同步。</li>
+</ol>
+<ul>
+<li>线程同步的代价式相当高的，同步的后果是降低并发性和性能</li>
+<li>在动态编译同步块的时候，JIT编译器可以借助逃逸分析来判断同步块所使用的锁对象是否只能够被一个线程访问而没有被发布到其他线程。如果没有，那么JIT编译器在编译这个同步块的时候就会取消对这部分代码的同步。这样就能大大提高并发性和性能。这个取消同步的过程就叫同步省略，也叫锁消除。</li>
+</ul>
+<p><img src="https://github.com/PayneZh/MarkDownPhotos/raw/master/res/%E5%90%8C%E6%AD%A5%E6%B6%88%E9%99%A4%E7%A4%BA%E4%BE%8B.jpg" alt="图16"></p>
+<ol start="3">
+<li>分离对象或标量替换。有的对象可能不需要作为一个连续的内存结构存在也可以被访问到。那么对象的部分（或全部）可以不存储在内存。而是存储在CPU寄存器中。</li>
+</ol>
+<ul>
+<li>标量（Scalar）是指一个无法再分解成更小的数据的数据。Java中的原始数据类型就是标量。</li>
+<li>相对的，那些还可以分解的数据叫做聚合量（Aggregate），Java中对象就是聚合量，因为他可以分解成其他聚合量和标量。</li>
+<li>在JIT阶段，如果经过逃逸分析，发现一个对象不会被外界访问的话，那么经过JIT优化，就会把这个对象拆解成若干个其中包含的若干个成员变量来代替。这个过程就是标量替换。</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">public static void main(String[] args) &#123;</span><br><span class="line">    alloc();</span><br><span class="line">&#125;</span><br><span class="line">private static void alloc()&#123;</span><br><span class="line">    Point point &#x3D; new Point(1,2);</span><br><span class="line">    System.out.println(&quot;point.x &#x3D;&quot;+point.x+&quot;; point.y&#x3D;&quot; + point.y);</span><br><span class="line">&#125;</span><br><span class="line">class Point&#123;</span><br><span class="line">    private int x;</span><br><span class="line">    private int y;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>以上代码，经过标量替换后，就会变成：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">  private static void alloc()&#123;</span><br><span class="line">      int x &#x3D; 1;</span><br><span class="line">int y &#x3D; 2;</span><br><span class="line">      System.out.println(&quot;point.x &#x3D;&quot;+point.x+&quot;; point.y&#x3D;&quot; + point.y);</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+<p>可以看到，Point这个聚合量经过逃逸分析后，发现他并没有逃逸，就被替换成两个聚合量了。那么标量替换有什么好处呢？就是可以大大减少堆内存的占用。因为一旦不需要创建对象了，那么就不再需要分配堆内存了。<br>标量替换为栈上分配提供了很好的基础。</p>
+<p>标量替换参数设置：参数-XX:+EliminateAllocations开启了标量替换（默认打开），允许将对象打散分配在栈上。</p>
+<p>逃逸分析小结：逃逸分析并不成熟</p>
+<ul>
+<li>关于逃逸分析的论文在1999年就已经发表了，但直到JDK1.6才有实现，而且这项技术到如今也并不是十分成熟的。</li>
+<li>其根本原因就是无法保证逃逸分析的性能消耗一定能高于它的消耗。虽然经过逃逸分析可以做标量替换、栈上分配、锁消除，但是逃逸分析自身也是需要进行一系列复杂的分析的，这其实也是一个相对耗时的过程。</li>
+<li>一个极端的例子，就是经过逃逸分析之后，发现没有一个对象时不逃逸的，那这个逃逸分析的过程就白白浪费掉了。</li>
+<li>虽然这项技术并不十分成熟，但是它也是即时编译器优化技术中一个十分重要的手段。</li>
+<li>注意到一些观点，认为通过逃逸分析，JVM会在栈上分配那些不会逃逸的对象，这在理论上是可行的，但是取决于JVM设计者的选择。据我所知，Oracle Hotspot JVM中并未这么做，这一点在逃逸分析相关的文档里已经说明，所以可以明确所有的对象实例都是创建在堆上。</li>
+<li>目前很多书籍还是基于JDK7以前的版本，JDK已经发生了很大变化，intern字符串的缓存和静态变量曾经都被分配在永久代上，而永久代已经被元数据区取代。但是，intern字符串缓存和静态变量并不是被转移到元数据区，而是直接在堆上分配，所以这一点同样符合前面一点的结论：对象实例都是分配在堆上。</li>
+</ul>
+<p>###本章小结</p>
+<ul>
+<li>年轻代是对象的诞生、成长、消亡的区域，一个对象在这里产生、应用、最后被垃圾回收器收集、结束生命。</li>
+<li>老年代放置长生命周期的对象，通常都是从Survivor区域筛选拷贝过来的Java对象。当然，也有特殊情况，我们知道普通的对象会被分配在TLAB上：如果对象较大，JVM会试图直接分配在Eden其它位置上；如果对象太大，完全无法在新生代找到足够长的连续空闲空间，JVM就会直接分配到老年代。</li>
+<li>当GC只发生在年轻代中，回收年轻代对象的行为被称为MinorGC。当GC发生在老年代时则被称为MajorGC或者FullGC。一般的，MinorGC的发生频率要比MajorGC高很多，即老年代垃圾回收发生的概率将大大低于年轻代。</li>
+</ul>
 
             </div>
             <hr/>
