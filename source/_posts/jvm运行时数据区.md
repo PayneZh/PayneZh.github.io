@@ -499,3 +499,15 @@ https://docs.oracle.com/javase/8/docs/technotes/tools/unix/java.html
 - 年轻代是对象的诞生、成长、消亡的区域，一个对象在这里产生、应用、最后被垃圾回收器收集、结束生命。
 - 老年代放置长生命周期的对象，通常都是从Survivor区域筛选拷贝过来的Java对象。当然，也有特殊情况，我们知道普通的对象会被分配在TLAB上：如果对象较大，JVM会试图直接分配在Eden其它位置上；如果对象太大，完全无法在新生代找到足够长的连续空闲空间，JVM就会直接分配到老年代。
 - 当GC只发生在年轻代中，回收年轻代对象的行为被称为MinorGC。当GC发生在老年代时则被称为MajorGC或者FullGC。一般的，MinorGC的发生频率要比MajorGC高很多，即老年代垃圾回收发生的概率将大大低于年轻代。
+
+
+## 方法区
+
+### 栈、堆、方法区的交互关系
+
+- 从线程共享的角度来看运行时数据区结构图
+- 
+![图17](https://github.com/PayneZh/MarkDownPhotos/raw/master/res/%E6%A0%88%E5%A0%86%E4%B8%8E%E6%96%B9%E6%B3%95%E5%8C%BA%E7%9A%84%E5%85%B3%E7%B3%BB%E5%9B%BE.jpg)
+
+- 栈、堆、方法区的交互关系
+![图18](https://github.com/PayneZh/MarkDownPhotos/raw/master/res/%E6%A0%88%E5%A0%86%E4%B8%8E%E6%96%B9%E6%B3%95%E5%8C%BA%E7%9A%84%E5%85%B3%E7%B3%BB%E5%9B%BE1.jpg)
