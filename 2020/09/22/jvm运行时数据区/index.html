@@ -874,6 +874,22 @@
 <li>老年代放置长生命周期的对象，通常都是从Survivor区域筛选拷贝过来的Java对象。当然，也有特殊情况，我们知道普通的对象会被分配在TLAB上：如果对象较大，JVM会试图直接分配在Eden其它位置上；如果对象太大，完全无法在新生代找到足够长的连续空闲空间，JVM就会直接分配到老年代。</li>
 <li>当GC只发生在年轻代中，回收年轻代对象的行为被称为MinorGC。当GC发生在老年代时则被称为MajorGC或者FullGC。一般的，MinorGC的发生频率要比MajorGC高很多，即老年代垃圾回收发生的概率将大大低于年轻代。</li>
 </ul>
+<h2 id="方法区"><a href="#方法区" class="headerlink" title="方法区"></a>方法区</h2><h3 id="栈、堆、方法区的交互关系"><a href="#栈、堆、方法区的交互关系" class="headerlink" title="栈、堆、方法区的交互关系"></a>栈、堆、方法区的交互关系</h3><ul>
+<li><p>从线程共享的角度来看运行时数据区结构图</p>
+</li>
+<li><p><img src="https://github.com/PayneZh/MarkDownPhotos/raw/master/res/%E6%A0%88%E5%A0%86%E4%B8%8E%E6%96%B9%E6%B3%95%E5%8C%BA%E7%9A%84%E5%85%B3%E7%B3%BB%E5%9B%BE.jpg" alt="图17"></p>
+</li>
+<li><p>栈、堆、方法区的交互关系<br><img src="https://github.com/PayneZh/MarkDownPhotos/raw/master/res/%E6%A0%88%E5%A0%86%E4%B8%8E%E6%96%B9%E6%B3%95%E5%8C%BA%E7%9A%84%E5%85%B3%E7%B3%BB%E5%9B%BE1.jpg" alt="图18"></p>
+</li>
+</ul>
+<h3 id="方法区的理解"><a href="#方法区的理解" class="headerlink" title="方法区的理解"></a>方法区的理解</h3><p>《Java虚拟机规范》中明确说明：“尽管所有的方法区在逻辑上是属于堆的一部分，但一些简单的实现可能不会选择去进行垃圾收集或者进行压缩。”但对于HotSpotJVM而言，方法区还有一个别名叫做Non-Heap（非堆），目的就是要和堆分开。所以，方法区看作是一块独立于Java堆的内存空间。</p>
+<ul>
+<li>方法区（Method Area）与Java堆一样，是各个线程共享的内存区域。</li>
+<li>方法区在JVM启动的时候被创建，并且它的实际的物理内存空间中和Java堆区一样都可以是不连续的。</li>
+<li>方法区的大小，跟堆空间一样，可以选择固定大小或者可扩展</li>
+<li>方法区的大小决定了系统可以保存多少个类，如果系统定义了太多的类，导致方法区溢出，虚拟机同样会抛出内存溢出错误：java.lang.OutOfMemoryError:PermGen space或者java.lang.OutOfMemoryError:Metaspace</li>
+<li>关闭JVM就会释放这个区域的内存。</li>
+</ul>
 
             </div>
             <hr/>
