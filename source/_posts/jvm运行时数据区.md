@@ -511,3 +511,13 @@ https://docs.oracle.com/javase/8/docs/technotes/tools/unix/java.html
 
 - 栈、堆、方法区的交互关系
 ![图18](https://github.com/PayneZh/MarkDownPhotos/raw/master/res/%E6%A0%88%E5%A0%86%E4%B8%8E%E6%96%B9%E6%B3%95%E5%8C%BA%E7%9A%84%E5%85%B3%E7%B3%BB%E5%9B%BE1.jpg)
+
+### 方法区的理解
+
+《Java虚拟机规范》中明确说明：“尽管所有的方法区在逻辑上是属于堆的一部分，但一些简单的实现可能不会选择去进行垃圾收集或者进行压缩。”但对于HotSpotJVM而言，方法区还有一个别名叫做Non-Heap（非堆），目的就是要和堆分开。所以，方法区看作是一块独立于Java堆的内存空间。
+
+- 方法区（Method Area）与Java堆一样，是各个线程共享的内存区域。
+- 方法区在JVM启动的时候被创建，并且它的实际的物理内存空间中和Java堆区一样都可以是不连续的。
+- 方法区的大小，跟堆空间一样，可以选择固定大小或者可扩展
+- 方法区的大小决定了系统可以保存多少个类，如果系统定义了太多的类，导致方法区溢出，虚拟机同样会抛出内存溢出错误：java.lang.OutOfMemoryError:PermGen space或者java.lang.OutOfMemoryError:Metaspace
+- 关闭JVM就会释放这个区域的内存。
