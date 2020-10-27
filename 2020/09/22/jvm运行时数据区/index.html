@@ -890,6 +890,40 @@
 <li>方法区的大小决定了系统可以保存多少个类，如果系统定义了太多的类，导致方法区溢出，虚拟机同样会抛出内存溢出错误：java.lang.OutOfMemoryError:PermGen space或者java.lang.OutOfMemoryError:Metaspace</li>
 <li>关闭JVM就会释放这个区域的内存。</li>
 </ul>
+<h3 id="Hotspot中方法区的演进"><a href="#Hotspot中方法区的演进" class="headerlink" title="Hotspot中方法区的演进"></a>Hotspot中方法区的演进</h3><p>在JDK7及以前，习惯上把方法区，称为永久代，JDK8开始，使用元空间取代了永久代。</p>
+<blockquote>
+<p>In JDK8,classes metadata is now stored in the <strong>native heap</strong> and this space is called <strong>Metaspace</strong></p>
+</blockquote>
+<p>在本质上，方法区和永久代并不等价。仅是对Hotspot而言的。《Java虚拟机规范》对如何实现方法区，不做统一要求。例如：BEA JRockit/IBM J9中不存在永久代的概念。</p>
+<ul>
+<li>现在来看，当年使用永久代，不是好的idea。导致Java程序更容易OOM（超过-XX：MaxPermSize上限）</li>
+</ul>
+<p><img src="https://github.com/PayneZh/MarkDownPhotos/raw/master/res/%E6%96%B9%E6%B3%95%E5%8C%BA%E6%A6%82%E8%BF%B0.jpg" alt="图19"></p>
+<ul>
+<li>而到了JDK8，终于完全废弃了永久代的概念，改用与JRockit、J9一样在本地内存中实现的元空间（Metaspace）来代替</li>
+<li>元空间的本质和永久代类似，都是对JVM规范中方法区的实现。不过元空间与永久代最大的区别在于：元空间不在虚拟机设置的内存中，而是使用本地内存</li>
+<li>永久代、元空间二者并不只是名字变了，内部结构也调整了</li>
+<li>根据《Java虚拟机规范》的规定，如果方法区无法满足新的内存分配需求时，将抛出OOM异常。</li>
+</ul>
+<h3 id="设置方法区大小与OOM"><a href="#设置方法区大小与OOM" class="headerlink" title="设置方法区大小与OOM"></a>设置方法区大小与OOM</h3><ul>
+<li>方法区的大小不必是固定的，jvm可以根据应用的需要动态调整。</li>
+<li>JDK7及以前：</li>
+</ul>
+<ol>
+<li>通过-XX:PermSize来设置永久代初始分配空间。默认值是20.75M</li>
+<li>-XX:MaxPermSize来设定永久代最大可分配空间。32位机器默认是64M,64位机器默认是82M</li>
+<li>当JVM加载的类信息容量超过了这个值，会报异常OutOfMemoryError:PermGen space。</li>
+</ol>
+<ul>
+<li>JDK8及以后：</li>
+</ul>
+<ol>
+<li>元数据区大小可以使用参数-XX:MetaspaceSize和-XX:MaxMetaspaceSize指定，替代上述原有的两个参数。</li>
+<li>默认值依赖于平台。Windows下，-XX:MetaspaceSize是21M,-XX:MaxMetaspaceSize的值是-1，即没有限制。</li>
+<li>与永久代不同，如果不指定大小，默认情况下，虚拟机会耗尽所有的可用系统内存。如果元数据区发生溢出，虚拟机一样会抛出异常OutOfMemoryError:Metaspace</li>
+<li>-XX:MetaspaceSize：设置初始的元空间大小。对于一个64位的服务器端JVM来说，其默认的-XX:MetaspaceSize是21M。这就是初始的高水位线，一旦触及这个水位线，Full GC将会被触发并卸载没用的类（即这些类对应的类加载器不再存活），然后这个高水位线将会重置。新的高水位线的值取决于GC后释放了多少元空间。如果释放的空间不足，那么在不超过MaxMetaspaceSize时，适当提高该值。如果释放空间过多，则适当降低该值。</li>
+<li>如果初始化的高水位线设置过低，上述高水位线调整情况会发生很多次。通过垃圾回收器的日志可以观察到Full GC多次调用。为了避免频繁的GC，建议将-XX:MetaspaceSize设置为一个相对较高的值。</li>
+</ol>
 
             </div>
             <hr/>
