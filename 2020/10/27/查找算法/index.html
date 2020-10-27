@@ -4,7 +4,7 @@
 
 <head>
     <meta charset="utf-8">
-    <meta name="keywords" content="排序算法, payne的博客">
+    <meta name="keywords" content="查找算法, payne的博客">
     <meta name="description" content="">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
@@ -16,7 +16,7 @@
     <!-- Global site tag (gtag.js) - Google Analytics -->
 
 
-    <title>排序算法 | payne的博客</title>
+    <title>查找算法 | payne的博客</title>
     <link rel="icon" type="image/png" href="/favicon.png">
 
     <link rel="stylesheet" type="text/css" href="/libs/awesome/css/all.css">
@@ -308,12 +308,12 @@
 
 
 
-<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/3.jpg')">
+<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/23.jpg')">
     <div class="container" style="right: 0px;left: 0px;">
         <div class="row">
             <div class="col s12 m12 l12">
                 <div class="brand">
-                    <h1 class="description center-align post-title">排序算法</h1>
+                    <h1 class="description center-align post-title">查找算法</h1>
                 </div>
             </div>
         </div>
@@ -455,7 +455,7 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-minus fa-fw"></i>发布日期:&nbsp;&nbsp;
-                    2020-10-11
+                    2020-10-27
                 </div>
                 
 
@@ -471,124 +471,14 @@
         <hr class="clearfix">
         <div class="card-content article-card-content">
             <div id="articleContent">
-                <h2 id="排序算法的介绍"><a href="#排序算法的介绍" class="headerlink" title="排序算法的介绍"></a>排序算法的介绍</h2><p>排序也称排序算法(Sort Algorithm),排序是将一组数据，依指定的顺序进行排列的过程。<br><strong>排序的分类</strong>：</p>
+                <h2 id="查找算法介绍"><a href="#查找算法介绍" class="headerlink" title="查找算法介绍"></a>查找算法介绍</h2><p>在java中，我们常用的查找有四种：</p>
 <ol>
-<li>内部排序：</li>
+<li>顺序（线性）查找</li>
+<li>二分查找/折半查找</li>
+<li>插值查找</li>
+<li>斐波那契查找</li>
 </ol>
-<p>指将需要处理的所有数据都加载到内部存储器中进行排序。<br>2. 外部排序：</p>
-<p>数据量过大，无法全部加载到内存中，需要借助外部存储进行排序。<br>3. 常见的排序算法分类（见下图）<br><img src="https://github.com/PayneZh/MarkDownPhotos/raw/master/res/algorithm/%E6%8E%92%E5%BA%8F%E5%88%86%E7%B1%BB.jpg" alt="图1"></p>
-<h2 id="算法的时间复杂度"><a href="#算法的时间复杂度" class="headerlink" title="算法的时间复杂度"></a>算法的时间复杂度</h2><ol>
-<li>事后统计的方法<br>这种方法可行，但是有两个问题，一是要想对设计的算法的运行性能进行评测，需要实际运行该程序：而是所得时间的统计量依赖于计算机的硬件、软件等环境因素，这种方式，要在同一台计算机的相同状态下运行，才能比较哪个算法速度更快。</li>
-<li>事前估算的方法<br>通过分析某个算法的时间复杂度来判断哪个算法更优。</li>
-</ol>
-<h3 id="时间频度"><a href="#时间频度" class="headerlink" title="时间频度"></a>时间频度</h3><p>时间频度：一个算法花费的时间与算法中语句的执行次数成正比例，哪个算法中语句执行次数多，它花费时间就多，一个算法中的语句执行次数称为语句频度或时间频度，记为T(n)。</p>
-<p>举例说明：<br>比如计算1-100所有数字之和，我们设计两种算法：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">int total &#x3D; 0;</span><br><span class="line">int end &#x3D; 100;</span><br><span class="line">for(int i &#x3D; 0; i &lt;&#x3D; end; i++)&#123;</span><br><span class="line">	total+&#x3D;1;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>T(n) = n + 1;<br>直接结算</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">total&#x3D;(1+end)*end&#x2F;2;</span><br></pre></td></tr></table></figure>
-<p>T(n) = 1;</p>
-<p>忽略常数项：</p>
-<ol>
-<li>2n+20和2n随着n变大，执行曲线无限接近，20可忽略</li>
-<li>3n+10和3n随着n变大，执行曲线无限接近，10可以忽略</li>
-</ol>
-<p>忽略低次项：</p>
-<ol>
-<li>2n^2+3n+10和2n^2随着n变大，执行曲线无限接近，可以忽略3n+10</li>
-<li>n^2+5n+20和n^2随着n变大，执行曲线无限接近，可以忽略5n+20</li>
-</ol>
-<p>忽略系数：</p>
-<ol>
-<li>随着n值变大，5n^2+7n和3n^2+2n,执行曲线重合，说明这种情况下，5和3可以忽略。</li>
-<li>而n^3+5n和6n^3+4n，执行曲线分离，说明多少次方关键。</li>
-</ol>
-<h3 id="时间复杂度"><a href="#时间复杂度" class="headerlink" title="时间复杂度"></a>时间复杂度</h3><ol>
-<li>一般情况下，算法中的基本操作语句的重复执行次数是问题规模n的某个函数，用T(n)表示，若有某个辅助函数f(n),使得当n趋近于无穷大时，T(n)/f(n)的极限值为不等于零的常数，则称f(n)是T(n)的同数量级函数，记做T(n) = O(f(n)),称O(f(n))为算法的渐进时间复杂度，简称时间复杂度。</li>
-<li>T(n)不同，但时间复杂度可能相同，如：T(n)=n^2+7n+6与T(n)=3n^2+2n+2它们的T(n)不同，但时间复杂度相同，都为O(n^2)。</li>
-<li>计算时间复杂度的方法：</li>
-</ol>
-<ul>
-<li>用常数1代替运行时间中的所有加法常数。</li>
-<li>修改后的运行次数函数中，只保留最高阶项</li>
-<li>去除最高阶项的系数。</li>
-</ul>
-<p>常见的时间复杂度</p>
-<ol>
-<li><p>常数阶O(1)<br>无论代码执行了多少行，只要是没有循环等复杂结构，那这个代码的时间复杂度就是O(1)</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">int i &#x3D; 1;</span><br><span class="line">int j &#x3D; 2;</span><br><span class="line">++i;</span><br><span class="line">j++;</span><br><span class="line">int m &#x3D; i + j;</span><br></pre></td></tr></table></figure>
-<p>上述代码在执行的时候，它消耗的时候并不随着某个变量的增长而增长，那么无论这类代码有多长，即使有几万几十万行，都可以用O(1)来表示它的时间复杂度。</p>
-</li>
-<li><p>对数阶O(logn)</p>
-</li>
-</ol>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">int i &#x3D; 1;</span><br><span class="line">while(i &lt; n)&#123;</span><br><span class="line">	i &#x3D; i * 2;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>在while循环里面，每次都将i乘以2，乘完之后，i距离n就越来越近了，假设循环x次之后，i就大于2了，此时这个循环就退出了，也就是说2的x次方等于n，那么x = logn也就是说当循环logn次以后，这个代码就结束了，因此这个代码的时间复杂度为：O(logn)</p>
-<ol start="3">
-<li><p>线性阶O(n)</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">for(i&#x3D;1;i&lt;&#x3D;n;++i)&#123;</span><br><span class="line">	j &#x3D; i;</span><br><span class="line">	j++;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>这段代码，for循环里面的代码会执行n遍，因此它消耗的时间是随着n的变化而变化的，因此这类代码都可以用O(n)来表示它的时间复杂度。</p>
-</li>
-<li><p>线性对数阶O(nlogn)</p>
-</li>
-</ol>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">for(m&#x3D;1;m&lt;n;m++)&#123;</span><br><span class="line">	int i &#x3D; 1;</span><br><span class="line">	while(i &lt; n)&#123;</span><br><span class="line">		i &#x3D; i * 2;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>线性对数阶O(nlogn)其实非常容易理解，将时间复杂度O(logn)的代码循环N遍的话，那么它的时间复杂度就是n*O(logn),也就是O(nlogn)</p>
-<ol start="5">
-<li>平方阶O(n^2)<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">for(x&#x3D;1;x&lt;&#x3D;n;x++)&#123;</span><br><span class="line">	for(i&#x3D;1;i&lt;&#x3D;n;i++&#123;</span><br><span class="line">		j &#x3D; i;</span><br><span class="line">		j++;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-</li>
-</ol>
-<p>平方阶O(n^2)就更容易理解了，如果把O(n)的代码再嵌套循环一遍，它的时间复杂度就是O(n^2)，这段代码其实就是嵌套了2层n循环，它的时间复杂度就是O(n^2)，如果将其中一层循环的n改成m，那它的时间复杂度就变成了O(m*n)</p>
-<ol start="6">
-<li>立方阶O(n^3)</li>
-</ol>
-<p>参考上面的O(n^2)去理解就好了，O(n^3)相当于3层的n循环</p>
-<ol start="7">
-<li>k次方阶O(n^k)</li>
-</ol>
-<p>参考上面的O(n^2)去理解就好了，O(n^k)相当于k层的n循环</p>
-<ol start="8">
-<li>指数阶O(2^n)</li>
-</ol>
-<ul>
-<li>常见的算法时间复杂度由小到大依次为：O(1)&lt;O(logn)&lt;O(n)&lt;O(nlogn)&lt;O(n^2)&lt;O(n^3)&lt;O(n^k)&lt;O(2^n)&lt;O(n!),随着问题规模n的不断增大，上述时间复杂度不断增大，算法的执行效率越低</li>
-</ul>
-<h3 id="平均时间复杂度和最坏时间复杂度"><a href="#平均时间复杂度和最坏时间复杂度" class="headerlink" title="平均时间复杂度和最坏时间复杂度"></a>平均时间复杂度和最坏时间复杂度</h3><ol>
-<li>平均时间复杂度是指所有可能的输入实例均以等概率出现的情况下，该算法的运行时间。</li>
-<li>最坏情况下的时间复杂度称最坏时间复杂度，一般讨论的时间复杂度均是最坏情况下的时间复杂度，这样做的原因是：最坏情况下的时间复杂度是算法在任何输入实例上运行时间的界限，这就保证了算法的运行时间不会比最坏情况更长。</li>
-<li>平均时间复杂度和最坏时间复杂度是否一致，和算法有关见下图<br><img src="https://github.com/PayneZh/MarkDownPhotos/raw/master/res/algorithm/%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95%E6%97%B6%E9%97%B4%E5%A4%8D%E6%9D%82%E5%BA%A6%E5%AF%B9%E6%AF%94.jpg" alt="图2"></li>
-</ol>
-<h2 id="算法的空间复杂度"><a href="#算法的空间复杂度" class="headerlink" title="算法的空间复杂度"></a>算法的空间复杂度</h2><ol>
-<li>类似于时间复杂度的讨论，一个算法的空间复杂度（Space Complexity）定义为该算法所耗费的存储空间，它也是问题规模n的函数</li>
-<li>空间复杂度（Space Complexity）是对一个算法在运行过程中临时占用存储空间大小的量度。有的算法需要占用的临时工作单元与解决问题的规模n有关，它随着n的增大而增大，当n较大时，将占用较多的存储单元，例如快速排序和归并排序算法就属于这种情况。</li>
-<li>在做算法分析时，主要讨论的是时间复杂度，从用户使用体验上看，更看重的程序执行的速度，一些缓存产品（Redis，memcache）和算法（基数排序）本质就是用空间换时间。</li>
-</ol>
-<h2 id="冒泡排序"><a href="#冒泡排序" class="headerlink" title="冒泡排序"></a>冒泡排序</h2><p>基本介绍：<br>冒泡排序（Bubble Sorting）的基本思想是：通过对待排序序列从前往后（从下标较小的元素开始），依次比较相邻元素的值，若发现逆序则交换，使值较大的元素逐渐从前移向后部，就像水底下的气泡一样逐渐向上冒。<br>因为排序的过程中，各元素不断接近自己的位置，如果一趟比较下来没有进行过交换，就说明序列有序，因此要在排序过程中设置一个标志flag判断元素是否进行过交换，从而减少不必要的比较。</p>
-<h2 id="选择排序"><a href="#选择排序" class="headerlink" title="选择排序"></a>选择排序</h2><p>基本介绍：<br>选择排序也属于内部排序法，是从欲排序的数据中，按指定的规则选出某一元素，再依规定交换位置后达到排序的目的</p>
-<p>思想：选择排序也是一种简单的排序方法，它的基本思想是：第一次从arr[0]<del>arr[n-1]中选取最小值，与arr[0]交换，第二次从arr[1]</del>arr[n-1]z中选取最小值，与arr[1]交换，第三次从arr[2]<del>arr[n-1]中选取最小值，与arr[2]交换，…，第i次从arr[i-1]</del>arr[n-1]中选取最小值，与arr[i-1]交换,…,第n-1次从arr[n-2]~arr[n-1]中选取最小值，与arr[n-2]交换,总共通过n-1次，得到一个按顺序码从小到大排列的有序序列。</p>
-<h2 id="插入排序"><a href="#插入排序" class="headerlink" title="插入排序"></a>插入排序</h2><p>基本介绍：<br>插入排序属于内部排序法，是对于欲排序的元素以插入的方式找寻该元素的适当位置，以达到排序的目的。<br>基本思想：把n个待排序的元素看成为一个有序表和一个无序表，开始时有序表中只包含一个元素，无序表中包含有n-1个元素，排序过程中每次从无序表中取出第一个元素，把它的排序码依次与有序表元素的排序码进行比较，将它插入到有序表中的适当位置，使之成为新的有序表</p>
-<h2 id="希尔排序"><a href="#希尔排序" class="headerlink" title="希尔排序"></a>希尔排序</h2><p>基本介绍：<br>希尔排序是希尔（Donald Shell）于1959年提出的一种排序算法。希尔排序也是一种插入排序，它是简单插入排序经过改进之后的一个更高效的版本，也称为缩小增量排序。<br>希尔排序法基本思想<br>希尔排序是把记录按下标的一定增量分组，对每组使用直接插入顺序算法排序，随着增量的逐渐减少，每组包含的关键词越来越少，当增量减至1时，整个文件恰被分成一组，算法便终止。</p>
-<h2 id="快速排序"><a href="#快速排序" class="headerlink" title="快速排序"></a>快速排序</h2><p>基本介绍：<br>快速排序（Quicksort）是对冒泡排序的一种改进。基本思想是：通过一趟排序将要排序的数据分割成独立的两部分，其中一部分的所有数据都比另一部分的所有数据都要小，然后再按此方法对这两部分数据分别进行快速排序，整个排序过程可以递归进行，以此达到整个数据变成有序序列。</p>
-<h2 id="归并排序"><a href="#归并排序" class="headerlink" title="归并排序"></a>归并排序</h2><p>基本介绍：<br>归并排序（Merge-Sort）是利用归并的思想实现的排序方法，该算法采用经典的分治（divide-and-conquer）策略（分治法将问题分（divide）成一些小的问题然后递归求解，而治（conquer）的阶段则将分的阶段得到的各答案”修补“在一起，即分而治之）。</p>
-<p><img src="https://github.com/PayneZh/MarkDownPhotos/raw/master/res/algorithm/%E5%BD%92%E5%B9%B6%E6%8E%92%E5%BA%8F%E6%80%9D%E6%83%B3.jpg" alt="图3"></p>
-<p><img src="https://github.com/PayneZh/MarkDownPhotos/raw/master/res/algorithm/%E5%BD%92%E5%B9%B6%E6%8E%92%E5%BA%8F%E6%80%9D%E6%83%B32.jpg" alt="图4"></p>
-<h2 id="基数排序"><a href="#基数排序" class="headerlink" title="基数排序"></a>基数排序</h2><p>基数排序（桶排序）介绍：</p>
-<ol>
-<li>基数排序（radix sort）属于“分配式排序”（distribution sort）,又称“桶子法”（bucket sort）或bin sort，顾名思义，它是通过键值的各个位的值，将要排序的元素分配至某些“桶”中，达到排序的作用。</li>
-<li>基数排序法是属于稳定性的排序，基数排序法是效率高的稳定性排序法</li>
-<li>基数排序（radix sort）是桶排序的扩展</li>
-<li>基数排序是1887年赫尔曼.何乐礼发明的，它是这样实现的：将整数按位数切割成不同的数字，然后按每个位数分别比较。</li>
-</ol>
-<p>基本思想</p>
-<p>将所有待比较数值统一为同样的数位长度，数位较短的数前面补零，然后，从最低位开始，依次进行一次排序。这样从最低位排序一直到最高位排序完成以后，数列就变成一个有序序列。<br><img src="https://github.com/PayneZh/MarkDownPhotos/raw/master/res/algorithm/%E5%9F%BA%E6%95%B0%E6%8E%92%E5%BA%8F%E5%9B%BE%E6%96%87%E8%AF%B4%E6%98%8E.jpg" alt="图5"></p>
-<p>基数排序的说明：</p>
-<ol>
-<li>基数排序是对传统桶排序的扩展，速度很快。</li>
-<li>基数排序是经典的空间换时间的方式，占用内存很大，当对海量数据排序时，容易造成OutOfMemoryError。</li>
-<li>基数排序是稳定的。【注：假定在待排序的记录序列中，存在多个具有相同的关键字的记录，若经过排序，这些记录的相对次序保持不变，即在原序列中，r[i]=r[j],且r[i]在r[j]之前，而在排序后的序列中，r[i]仍在r[j]之前，则称这种排序算法时稳定的，否则为不稳定的】。</li>
-<li>有负数的数据，我们需要对现有算法进行改进。</li>
-</ol>
-<h2 id="常用排序算法的总结和对比"><a href="#常用排序算法的总结和对比" class="headerlink" title="常用排序算法的总结和对比"></a>常用排序算法的总结和对比</h2><p><img src="https://github.com/PayneZh/MarkDownPhotos/raw/master/res/algorithm/%E5%B8%B8%E7%94%A8%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95%E6%80%BB%E7%BB%93.jpg" alt="图6"></p>
+<h2 id="线性查找算法"><a href="#线性查找算法" class="headerlink" title="线性查找算法"></a>线性查找算法</h2><p>有一个数列：{1,8,10,89,1000，1234}，判断数列中是否包含此名称【顺序查找】要求：如果找到了，就提示找到，并给出下标值。</p>
 
             </div>
             <hr/>
@@ -614,7 +504,7 @@
                     </i>
                 </span>
                 <span class="reprint-info">
-                    <a href="https://paynezh.github.io/2020/10/11/%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/">https://paynezh.github.io/2020/10/11/%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/</a>
+                    <a href="https://paynezh.github.io/2020/10/27/%E6%9F%A5%E6%89%BE%E7%AE%97%E6%B3%95/">https://paynezh.github.io/2020/10/27/%E6%9F%A5%E6%89%BE%E7%AE%97%E6%B3%95/</a>
                 </span>
             </div>
             <div class="reprint__notice">
@@ -821,9 +711,10 @@
 <article id="prenext-posts" class="prev-next articles">
     <div class="row article-row">
         
-        <div class="article col s12 m6" data-aos="fade-up">
+        <div class="article col s12 m6" data-aos="fade-up" data-aos="fade-up">
             <div class="article-badge left-badge text-color">
-                <i class="fas fa-chevron-left"></i>&nbsp;上一篇</div>
+                <i class="far fa-dot-circle"></i>&nbsp;本篇
+            </div>
             <div class="card">
                 <a href="/2020/10/27/%E6%9F%A5%E6%89%BE%E7%AE%97%E6%B3%95/">
                     <div class="card-image">
@@ -848,9 +739,9 @@
                         
                     </div>
                     <div class="publish-info">
-                        <span class="publish-date">
-                            <i class="far fa-clock fa-fw icon-date"></i>2020-10-27
-                        </span>
+                            <span class="publish-date">
+                                <i class="far fa-clock fa-fw icon-date"></i>2020-10-27
+                            </span>
                         <span class="publish-author">
                             
                             <i class="fas fa-bookmark fa-fw icon-category"></i>
@@ -863,6 +754,7 @@
                         </span>
                     </div>
                 </div>
+
                 
                 <div class="card-action article-tags">
                     
@@ -881,24 +773,29 @@
                 下一篇&nbsp;<i class="fas fa-chevron-right"></i>
             </div>
             <div class="card">
-                <a href="/2020/10/07/%E6%9C%AC%E5%9C%B0%E6%96%B9%E6%B3%95/">
+                <a href="/2020/10/11/%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/">
                     <div class="card-image">
                         
                         
-                        <img src="/medias/featureimages/16.jpg" class="responsive-img" alt="本地方法">
+                        <img src="/medias/featureimages/3.jpg" class="responsive-img" alt="排序算法">
                         
-                        <span class="card-title">本地方法</span>
+                        <span class="card-title">排序算法</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
                     <div class="summary block-with-text">
                         
-                            概述简单地讲，一个Native Method就是一个Java调用非Java代码的接口。一个Native Method是这样一个Java方法：该方法的实现由非Java语言实现，比如C,这个特征并非Java所特有，很多其它的编程语言都有这一机制
+                            排序算法的介绍排序也称排序算法(Sort Algorithm),排序是将一组数据，依指定的顺序进行排列的过程。排序的分类：
+
+内部排序：
+
+指将需要处理的所有数据都加载到内部存储器中进行排序。2. 外部排序：
+数据量过大，无法全部加载到内存
                         
                     </div>
                     <div class="publish-info">
                             <span class="publish-date">
-                                <i class="far fa-clock fa-fw icon-date"></i>2020-10-07
+                                <i class="far fa-clock fa-fw icon-date"></i>2020-10-11
                             </span>
                         <span class="publish-author">
                             
@@ -915,8 +812,8 @@
                 
                 <div class="card-action article-tags">
                     
-                    <a href="/tags/java%E5%9F%BA%E7%A1%80/">
-                        <span class="chip bg-color">java基础</span>
+                    <a href="/tags/%E7%BC%96%E7%A8%8B%E5%9F%BA%E7%A1%80/">
+                        <span class="chip bg-color">编程基础</span>
                     </a>
                     
                 </div>
