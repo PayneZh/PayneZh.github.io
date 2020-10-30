@@ -610,3 +610,59 @@ class Order{
 
 补充说明:全局常量（static final）
 被声明为final的**类变量**的处理方法则不同，每个全局常量在**编译**的时候就会被分配了。
+
+### 运行时常量池vs常量池
+
+- 方法区，内部包含了运行时常量池
+- 字节码文件，内部包含了常量池
+- 要弄清楚方法区，需要理解清楚ClassFile，因为加载类的信息都在方法区。
+- 要弄清楚方法区的运行时常量池，需要理解清楚ClassFile中的常量池。
+https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-4.html
+
+![图22](https://github.com/PayneZh/MarkDownPhotos/raw/master/res/%E5%B8%B8%E9%87%8F%E6%B1%A0%E5%9C%A8class%E6%96%87%E4%BB%B6%E4%B8%AD%E7%9A%84%E4%BD%8D%E7%BD%AE.jpg)
+一个有效的字节码文件中除了包含类的版本信息、字段、方法以及接口等描述信息外，还包含一项信息那就是常量池表（Constant Pool Table），包括各种字面量和对类型、域、和方法的符号引用。
+
+**为什么需要常量池**
+一个java源文件中的类、接口，编译后产生一个字节码文件。而java中的字节码需要数据支持，通常这种数据会很大以至于不能直接存到字节码里，换另一种方式，可以存到常量池，这个字节码包含了指向常量池的引用，在动态链接的时候会用到运行时常量池，之前有介绍。比如：如下的代码：
+```
+public class SimpleClass{
+	public void sayHello(){
+		System.out.println("hello");
+	}
+}
+```
+虽然只有194字节，但是里面却使用了String、System、PrintStream及Object等结构。这里代码量其实已经很小了，如果代码多，引用到的结构会更多！这里就需要常量池了！
+几种在常量池内存储的数据类型包括：
+
+1. 数量值
+2. 字符串值
+3. 类引用
+4. 字段引用
+5. 方法引用
+
+例如下面这段代码：
+```
+public class MethodAreaTest2{
+	public static void main(String[] args){
+		Object obj = new Object();
+	}
+}
+```
+Object foo = new Object();将会被编译成如下字节码：
+> 0: new #2 //Class java/lang/Object
+> 
+> 1: dup
+> 
+> 2: invokespecial #3 //Method java/lang/Object "<init>" V
+
+小结：常量池，可以看做是一张表，虚拟机指令根据这张常量表找到要执行的类名、方法名、参数类型、字面量等类型。
+
+**运行时常量池**
+
+- 运行时常量池（Runtime Constant Pool）是方法区的一部分。
+- 常量池表（Constant Pool Table）是Class文件的一部分，用于存放编译期生成的各种字面量与符号引用，这部分内容将在类加载后存放到方法区的运行时常量池中。
+- 运行时常量池，在加载类和接口到虚拟机后，就会创建对应的运行时常量池。
+- JVM为每个已加载的类型（类或接口）都维护一个常量池。池中的数据项像数组项一样，是通过索引访问的。
+- 运行时常量池中包含多种不同的常量，包括编译期就已经明确的数值字面量，也包括到运行期解析后才能够获得的方法或者字段引用。此时不再是常量池中的符号地址了，这里换为真实地址。运行时常量池，相对于Class文件常量池的另一个重要特征是：具备动态性。
+- 运行时常量池类似于传统编程语言中的符号表（symbol table），但是它所包含的数据却比符号表要更加丰富一些。
+- 当创建类或接口的运行时常量池时，如果构造运行时常量池所需的内存空间超过了方法区所能提供的最大值，则JVM会抛OutOfMemoryError异常。
