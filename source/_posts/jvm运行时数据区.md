@@ -666,3 +666,28 @@ Object foo = new Object();将会被编译成如下字节码：
 - 运行时常量池中包含多种不同的常量，包括编译期就已经明确的数值字面量，也包括到运行期解析后才能够获得的方法或者字段引用。此时不再是常量池中的符号地址了，这里换为真实地址。运行时常量池，相对于Class文件常量池的另一个重要特征是：具备动态性。
 - 运行时常量池类似于传统编程语言中的符号表（symbol table），但是它所包含的数据却比符号表要更加丰富一些。
 - 当创建类或接口的运行时常量池时，如果构造运行时常量池所需的内存空间超过了方法区所能提供的最大值，则JVM会抛OutOfMemoryError异常。
+
+### 方法区的演进细节
+
+1. 首先明确：只有Hotspot才有永久代。BEA JRockit、IBM J9等来说，是不存在永久代的概念的。原则上如何实现方法区属于虚拟机实现细节，不受《Java虚拟机规范》管束，并不要求统一。
+2. Hotspot中方法区的变化：如下图
+![图23](https://github.com/PayneZh/MarkDownPhotos/raw/master/res/%E6%96%B9%E6%B3%95%E5%8C%BA%E6%BC%94%E8%BF%9B%E7%BB%86%E8%8A%82.jpg)
+JDK6方法区图示如下：
+![图24](https://github.com/PayneZh/MarkDownPhotos/raw/master/res/JDK6%E6%96%B9%E6%B3%95%E5%8C%BA%E5%9B%BE.jpg)
+JDK7方法区图示如下：
+![图25](https://github.com/PayneZh/MarkDownPhotos/raw/master/res/JDK7%E6%96%B9%E6%B3%95%E5%8C%BA%E5%9B%BE.jpg)
+JDK8方法区图示如下：
+![图26](https://github.com/PayneZh/MarkDownPhotos/raw/master/res/JDK8%E6%96%B9%E6%B3%95%E5%8C%BA%E5%9B%BE.jpg)
+
+永久代为什么要被元空间替换？
+
+1. 官方解释：http://openjdk.java.net/jeps/122
+2. 随着java8的到来，Hotspot VM中再也见不到永久代了。但是这并不意味着类的元数据信息也消失了。这些数据被移到了一个与堆不相连的本地内存区域，这个区域叫做元空间（Metaspace）。
+3. 由于类的元数据分配在本地内存中，元空间的最大可分配空间就是系统可用内存空间。
+4. 这项改动是很有必要的，原因有：
+1）为永久代设置空间大小是很难确定的。在某些场景下，如果动态加载类过多，容易产生Perm区的OOM。比如某个实际Web工程中，因为功能点比较多，在运行过程中，要不断动态加载很多类，经常出现致命错误（Exception in thread 'dubbo client x_x connector' java.lang.OutOfMemoryError:PermGen space）。而元空间和永久代之间最大的区别在于：元空间并不在虚拟机中，而是使用本地内存。因此，默认情况下，元空间的大小仅受本地内存限制。
+2）对永久代进行调优是很困难的。
+
+StringTable(字符串常量)为什么要调整？
+jdk7中将StringTable放到了堆空间中。因为永久代的回收效率很低，在full GC的时候才会触发。而full GC是老年代的空间不足、永久代不足时才会触发。这就导致StringTable回收效率不高。而我们开发中会有大量的字符串被创建，回收效率低，导致永久代内存不足。放到堆里，能及时回收内存。
+
