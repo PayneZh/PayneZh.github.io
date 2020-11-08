@@ -58,8 +58,9 @@ categories: 编程
 
 - JVM支持两种类型的类加载器，分别为引导类加载器（Bootstrap ClassLoader）和自定义类加载器（User-Defined ClassLoader).
 - 从概念上来讲，自定义类加载器一般指的是程序中由开发人员自定义的一类类加载器，但是java虚拟机规范却没有这么定义，而是**将所有派生于抽象类ClassLoader的类加载器都划分为自定义类加载器**
-- 无论类加载器的类型如何划分，在程序中我们最常见的类加载器始终只有3个，如下所示：![图1](https://raw.githubusercontent.com/PayneZh/MarkDownPhotos/master/res/%E7%B1%BB%E5%8A%A0%E8%BD%BD%E5%99%A8%E5%88%86%E7%B1%BB.jpg)
-- 自定义类加载器继承关系如下所示：![图2](https://github.com/PayneZh/MarkDownPhotos/raw/master/res/%E8%87%AA%E5%AE%9A%E4%B9%89%E7%B1%BB%E5%8A%A0%E8%BD%BD%E5%99%A8%E7%BB%A7%E6%89%BF%E5%85%B3%E7%B3%BB.jpg)
+- 无论类加载器的类型如何划分，在程序中我们最常见的类加载器始终只有3个，如下所示：![图1](https://raw.githubusercontent.com/PayneZh/MarkDownPhotos/master/res/%E7%B1%BB%E5%8A%A0%E8%BD%BD/%E7%B1%BB%E5%8A%A0%E8%BD%BD%E5%99%A8%E5%88%86%E7%B1%BB.jpg)
+
+- 自定义类加载器继承关系如下所示：![图2](https://github.com/PayneZh/MarkDownPhotos/raw/master/res/%E7%B1%BB%E5%8A%A0%E8%BD%BD/%E8%87%AA%E5%AE%9A%E4%B9%89%E7%B1%BB%E5%8A%A0%E8%BD%BD%E5%99%A8%E7%BB%A7%E6%89%BF%E5%85%B3%E7%B3%BB.jpg)
 
 ### 启动类加载器（BootStrapClassLoader）
  
@@ -117,8 +118,8 @@ java虚拟机对class文件采用的是按需加载的方式，也就是说当�
 
 1. 如果一个类加载器收到了类加载请求。它并不会自己先去加载，而是把这个请求委托给父类的加载器去执行
 2. 如果父类加载器还存在其父类加载器，则进一步向上委托，依次递归，请求最终将到达顶层的启动类加载器
-3. 如果父类加载器可以完成类加载任务，就成功返回，倘若父类加载器无法完成此加载任务，子加载器才会尝试自己去加载，这就是双亲委派模式，见图：![图3](https://github.com/PayneZh/MarkDownPhotos/raw/master/res/%E5%8F%8C%E4%BA%B2%E5%A7%94%E6%B4%BE%E6%9C%BA%E5%88%B6.jpg) 
-![图4](https://github.com/PayneZh/MarkDownPhotos/raw/master/res/%E5%8F%8C%E4%BA%B2%E5%A7%94%E6%B4%BE%E6%9C%BA%E5%88%B6%E5%9B%BE%E8%A7%A3.jpg)
+3. 如果父类加载器可以完成类加载任务，就成功返回，倘若父类加载器无法完成此加载任务，子加载器才会尝试自己去加载，这就是双亲委派模式，见图：![图3](https://github.com/PayneZh/MarkDownPhotos/raw/master/res/%E7%B1%BB%E5%8A%A0%E8%BD%BD/%E5%8F%8C%E4%BA%B2%E5%A7%94%E6%B4%BE%E6%9C%BA%E5%88%B6.jpg) 
+![图4](https://github.com/PayneZh/MarkDownPhotos/raw/master/res/%E7%B1%BB%E5%8A%A0%E8%BD%BD/%E5%8F%8C%E4%BA%B2%E5%A7%94%E6%B4%BE%E6%9C%BA%E5%88%B6%E5%9B%BE%E8%A7%A3.jpg)
 
 ### 优势
 
