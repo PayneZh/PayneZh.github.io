@@ -8,12 +8,12 @@ categories: 编程
 
 内存是非常重要的系统资源，是硬盘和CPU的中间仓库及桥梁，承载着操作系统和应用程序的实时运行。JVM内存布局规定了Java在运行过程中内存申请、分配、管理的策略，保证了JVM的高效稳定运行。
 不同的JVM对于内存的划分方式和管理机制存在着部分差异。结合JVM虚拟机规范，来探讨一下经典的JVM内存布局。
-如下所示：![图1](https://github.com/PayneZh/MarkDownPhotos/raw/master/res/%E8%BF%90%E8%A1%8C%E6%97%B6%E5%AD%90%E7%B3%BB%E7%BB%9F.jpg)
-![图2](https://github.com/PayneZh/MarkDownPhotos/raw/master/res/%E8%BF%90%E8%A1%8C%E6%97%B6%E5%AD%90%E7%B3%BB%E7%BB%9F1.jpg)
+如下所示：![图1](https://github.com/PayneZh/MarkDownPhotos/raw/master/res/jvm%E8%BF%90%E8%A1%8C%E6%97%B6%E6%95%B0%E6%8D%AE%E5%8C%BA/%E8%BF%90%E8%A1%8C%E6%97%B6%E5%AD%90%E7%B3%BB%E7%BB%9F.jpg)
+![图2](https://github.com/PayneZh/MarkDownPhotos/raw/master/res/jvm%E8%BF%90%E8%A1%8C%E6%97%B6%E6%95%B0%E6%8D%AE%E5%8C%BA/%E8%BF%90%E8%A1%8C%E6%97%B6%E5%AD%90%E7%B3%BB%E7%BB%9F1.jpg)
 Java虚拟机定义了若干种程序运行期间会使用的运行时数据区，其中有一些会随着虚拟机启动而创建，随着虚拟机退出而销毁。另外一些则是与线程一一对应的，这些与线程对应的数据区域会随着线程开始和结束而创建和销毁
 即每个线程：独立包括程序计数器，栈，本地栈。线程间共享：堆，堆外内存（永久代或元空间，代码缓存）
 注：每个JVM只有一个Runtime实例，即为运行时环境，相当于内存结构的中间的那个框框：运行时环境
-![图3](https://github.com/PayneZh/MarkDownPhotos/raw/master/res/Class%20Runtime.jpg)
+![图3](https://github.com/PayneZh/MarkDownPhotos/raw/master/res/jvm%E8%BF%90%E8%A1%8C%E6%97%B6%E6%95%B0%E6%8D%AE%E5%8C%BA/Class%20Runtime.jpg)
 
 ## JVM中的线程说明
 
@@ -32,13 +32,13 @@ Java虚拟机定义了若干种程序运行期间会使用的运行时数据区�
 
 JVM中的程序计数寄存器（Program Counter Register）中，Register的命名源于CPU的寄存器，寄存器存储指令相关的现场信息，CPU只有把数据装载到寄存器才能运行，这里，并非是广义上所指的物理寄存器，或许将其翻译为PC计数器（或指令计数器）会更加贴切（也称为程序钩子），并且也不容易引起一些不必要的误会，JVM中的PC寄存器是对物理PC寄存器的一种抽象模拟。
 
-- 作用：PC寄存器用来存储指向下一条指令的地址，也即将要执行的指令代码，由执行引擎读取下一条指令![图4](https://github.com/PayneZh/MarkDownPhotos/raw/master/res/pc%E5%AF%84%E5%AD%98%E5%99%A8.jpg)
+- 作用：PC寄存器用来存储指向下一条指令的地址，也即将要执行的指令代码，由执行引擎读取下一条指令![图4](https://github.com/PayneZh/MarkDownPhotos/raw/master/res/jvm%E8%BF%90%E8%A1%8C%E6%97%B6%E6%95%B0%E6%8D%AE%E5%8C%BA/pc%E5%AF%84%E5%AD%98%E5%99%A8.jpg)
 - 它是一块很小的内存空间，几乎可以忽略不计，也是运行速度最快的存储区域
 - 在JVM规范中，每个线程都有它自己的程序计数器，是线程私有的，生命周期与线程的生命周期保持一致.
 - 任何时间一个线程都只有一个方法在执行，也就是所谓的当前方法，程序计数器会存储当前线程正在执行的Java方法的JVM指令地址，或者如果是在执行native方法，则是未指定值（undefined）。
 - 它是程序控制流的指示器，分支、循环、跳转、异常处理、线程恢复等基础功能都需要依赖这个计数器来完成。
 - 字节码解释器工作时就是通过改变这个计数器的值来选取下一条需要执行的字节码指令。
-- 它是唯一一个在Java虚拟机规范中没有规定任何OutOfMemoryError情况的区域。![图5](https://github.com/PayneZh/MarkDownPhotos/raw/master/res/pc%E5%AF%84%E5%AD%98%E5%99%A8%E5%8F%8D%E7%BC%96%E8%AF%91%E5%9B%BE%E8%A7%A3.jpg)
+- 它是唯一一个在Java虚拟机规范中没有规定任何OutOfMemoryError情况的区域。![图5](https://github.com/PayneZh/MarkDownPhotos/raw/master/res/jvm%E8%BF%90%E8%A1%8C%E6%97%B6%E6%95%B0%E6%8D%AE%E5%8C%BA/pc%E5%AF%84%E5%AD%98%E5%99%A8%E5%8F%8D%E7%BC%96%E8%AF%91%E5%9B%BE%E8%A7%A3.jpg)
 - 使用PC寄存器存储字节码指令地址有什么用呢？为什么使用PC寄存器记录当前线程的执行地址呢？因为CPU需要不停的切换各个线程，这时候切换回来以后，就得知道接着从哪开始继续执行。JVM的字节码解释器就需要通过改变PC寄存器的值来明确下一条应该执行什么样的字节码指令。
 - PC寄存器为什么会被设定为线程私有？我们都知道所谓的多线程在一个特定的时间段内只会执行其中某一个线程的方法，CPU会不停的做任务切换，这样必然导致经常中断或恢复，如何保证分毫不差呢？为了能够准确的记录各个线程正在执行的当前字节码指令地址，最好的办法自然是为每一个线程都分配一个PC寄存器，这样一来各个线程之间便可以进行独立计算，从而不会出现相互干扰的情况。由于CPU时间片轮限制，众多线程在并发执行过程中，任何一个确定的时刻，一个处理器或者多核处理器中的一个内核，只会执行某个线程中的一条指令。这样必然导致经常中断或恢复，如何保证分毫无差呢？每个线程在创建后，都会产生自己的程序计数器和栈帧，程序计数器在各个线程之间互不影响。
 
@@ -81,7 +81,7 @@ JVM中的程序计数寄存器（Program Counter Register）中，Register的命
 - 动态链接（Dynamic Linking)（或指向运行时常量池的方法引用）
 - 方法返回地址（Return Address）（或方法正常退出或者异常退出的定义）
 - 一些附加信息
-![图6](https://github.com/PayneZh/MarkDownPhotos/raw/master/res/%E6%A0%88%E5%B8%A7%E7%9A%84%E7%BB%84%E6%88%90.jpg)
+![图6](https://github.com/PayneZh/MarkDownPhotos/raw/master/res/jvm%E8%BF%90%E8%A1%8C%E6%97%B6%E6%95%B0%E6%8D%AE%E5%8C%BA/%E6%A0%88%E5%B8%A7%E7%9A%84%E7%BB%84%E6%88%90.jpg)
 - 帧数据区：包括1.方法返回地址，2.动态链接，3.一些附加信息
 
 
@@ -140,7 +140,7 @@ public void test(){
 - 在Java源文件被编译到字节码文件中时，所有的变量和方法引用都作为符号引用（Symbolic Reference）保存在class文件的常量池里。比如：描述一个方法调用了另外的其他方法时，就是通过常量池中指向方法的符号引用来表示的，那么动态链接的作用就是为了将这些符号引用转换为调用方法的直接引用。
 - 为什么需要常量池呢？
 常量池的作用就是为了提供一些符号和常量，便于指令的识别。
-![图7](https://github.com/PayneZh/MarkDownPhotos/raw/master/res/%E5%8A%A8%E6%80%81%E9%93%BE%E6%8E%A5%E7%A4%BA%E6%84%8F%E5%9B%BE.jpg)
+![图7](https://github.com/PayneZh/MarkDownPhotos/raw/master/res/jvm%E8%BF%90%E8%A1%8C%E6%97%B6%E6%95%B0%E6%8D%AE%E5%8C%BA/%E5%8A%A8%E6%80%81%E9%93%BE%E6%8E%A5%E7%A4%BA%E6%84%8F%E5%9B%BE.jpg)
 
 #### 方法的调用
 
@@ -198,7 +198,7 @@ IllegalAccessError：程序试图访问或修改一个属性或调用一个方�
 2. 每个类中都有一个虚方法表，表中存放着各个方法的实际入口。
 3. 那么虚方法表什么时候被创建？
 虚方法表会在类加载的链接阶段被创建并开始初始化，类的变量初始值准备完成之后，JVM会把该类的方法表也初始化完毕。
-![图8](https://github.com/PayneZh/MarkDownPhotos/raw/master/res/%E8%99%9A%E6%96%B9%E6%B3%95%E8%A1%A8.jpg)
+![图8](https://github.com/PayneZh/MarkDownPhotos/raw/master/res/jvm%E8%BF%90%E8%A1%8C%E6%97%B6%E6%95%B0%E6%8D%AE%E5%8C%BA/%E8%99%9A%E6%96%B9%E6%B3%95%E8%A1%A8.jpg)
 
 #### 方法返回地址
 
@@ -236,7 +236,7 @@ IllegalAccessError：程序试图访问或修改一个属性或调用一个方�
 - 并不是所有的JVM都支持本地方法。因为Java虚拟机规范并没有明确要求本地方法栈的使用语言、具体实现方式、数据结构等。如果JVM产品不打算支持native方法，也可以无需实现本地方法栈。
 - 在HotSpot JVM中，直接将本地方法栈和虚拟机栈合二为一。
 
-![图9](https://github.com/PayneZh/MarkDownPhotos/raw/master/res/%E6%9C%AC%E5%9C%B0%E6%96%B9%E6%B3%95%E6%A0%88.jpg)
+![图9](https://github.com/PayneZh/MarkDownPhotos/raw/master/res/jvm%E8%BF%90%E8%A1%8C%E6%97%B6%E6%95%B0%E6%8D%AE%E5%8C%BA/%E6%9C%AC%E5%9C%B0%E6%96%B9%E6%B3%95%E6%A0%88.jpg)
 
 ## 堆
 
@@ -250,8 +250,8 @@ IllegalAccessError：程序试图访问或修改一个属性或调用一个方�
 - 堆，是GC(Garbage Collection.垃圾收集器)执行垃圾回收的重点区域。
 - 内部划分：
 现代垃圾收集器大部分都基于分代收集理论设计，堆空间细分为：
-![图10](https://github.com/PayneZh/MarkDownPhotos/raw/master/res/%E5%A0%86%E7%A9%BA%E9%97%B4%E5%88%92%E5%88%86.jpg)
-![图11](https://github.com/PayneZh/MarkDownPhotos/raw/master/res/%E5%A0%86%E7%A9%BA%E9%97%B4(JDK7).jpg)
+![图10](https://github.com/PayneZh/MarkDownPhotos/raw/master/res/jvm%E8%BF%90%E8%A1%8C%E6%97%B6%E6%95%B0%E6%8D%AE%E5%8C%BA/%E5%A0%86%E7%A9%BA%E9%97%B4%E5%88%92%E5%88%86.jpg)
+![图11](https://github.com/PayneZh/MarkDownPhotos/raw/master/res/jvm%E8%BF%90%E8%A1%8C%E6%97%B6%E6%95%B0%E6%8D%AE%E5%8C%BA/%E5%A0%86%E7%A9%BA%E9%97%B4(JDK7).jpg)
 
 ### 堆空间大小的设置
 
@@ -272,7 +272,7 @@ IllegalAccessError：程序试图访问或修改一个属性或调用一个方�
 
 - Java堆区进一步细分的话，可以划分为年轻代（YoungGen）和老年代（OldGen)
 - 其中年轻代又可以划分为Eden空间、Survivor0空间和Survivor1空间（有时也叫做from区、to区)。
-![图12](https://github.com/PayneZh/MarkDownPhotos/raw/master/res/%E5%A0%86%E7%A9%BA%E9%97%B4%E7%BB%86%E5%88%86.jpg)
+![图12](https://github.com/PayneZh/MarkDownPhotos/raw/master/res/jvm%E8%BF%90%E8%A1%8C%E6%97%B6%E6%95%B0%E6%8D%AE%E5%8C%BA/%E5%A0%86%E7%A9%BA%E9%97%B4%E7%BB%86%E5%88%86.jpg)
 
 - 配置新生代与老年代在堆结构的占比(这些参数开发中一般不会调)
   1. 默认-XX:NewRatio=2,表示新生代占1，老年代占2，新生代占整个堆的1/3.
@@ -300,7 +300,7 @@ java.lang.OutOfMemoryError: Java heap space
 - 针对幸存者s0,s1区的总结：复制之后有交换，谁空谁是to
 - 关于垃圾回收：频繁在新生区收集，很少在养老区收集，几乎不再永久区/元空间收集。
 
-![图13](https://github.com/PayneZh/MarkDownPhotos/raw/master/res/%E5%AF%B9%E8%B1%A1%E5%88%86%E9%85%8D%E5%9B%BE%E8%A7%A3.jpg)
+![图13](https://github.com/PayneZh/MarkDownPhotos/raw/master/res/jvm%E8%BF%90%E8%A1%8C%E6%97%B6%E6%95%B0%E6%8D%AE%E5%8C%BA/%E5%AF%B9%E8%B1%A1%E5%88%86%E9%85%8D%E5%9B%BE%E8%A7%A3.jpg)
 
 ### 常用调优工具
 
@@ -381,7 +381,7 @@ Full GC触发机制：
 - 默认情况下，TLAB空间的内存非常小，仅占有整个Eden空间的1%，当然我们可以通过选项“-XX:TLABWasteTargetPercent”设置TLAB空间所占用Eden空间的百分比大小。
 - 一旦对象在TLAB空间分配内存失败时，JVM就会尝试着通过使用加锁机制确保数据操作的原子性，从而直接在Eden空间中分配内存。
 
-![图14](https://github.com/PayneZh/MarkDownPhotos/raw/master/res/TLAB%E5%88%86%E9%85%8D%E8%BF%87%E7%A8%8B.jpg)
+![图14](https://github.com/PayneZh/MarkDownPhotos/raw/master/res/jvm%E8%BF%90%E8%A1%8C%E6%97%B6%E6%95%B0%E6%8D%AE%E5%8C%BA/TLAB%E5%88%86%E9%85%8D%E8%BF%87%E7%A8%8B.jpg)
 
 ### 小结堆空间的参数设置
 
@@ -427,7 +427,7 @@ https://docs.oracle.com/javase/8/docs/technotes/tools/unix/java.html
 
 1). 当一个对象在方法中被定义后，对象只在方法内部使用，则认为没有发生逃逸。
 2). 当一个对象在方法中被定义后，它被外部方法所引用，则认为发生逃逸。例如作用调用参数传递到其他地方中。
-![图15](https://github.com/PayneZh/MarkDownPhotos/raw/master/res/%E9%80%83%E9%80%B8%E5%88%86%E6%9E%90%E7%A4%BA%E4%BE%8B.jpg)
+![图15](https://github.com/PayneZh/MarkDownPhotos/raw/master/res/jvm%E8%BF%90%E8%A1%8C%E6%97%B6%E6%95%B0%E6%8D%AE%E5%8C%BA/%E9%80%83%E9%80%B8%E5%88%86%E6%9E%90%E7%A4%BA%E4%BE%8B.jpg)
 
 参数设置：
 - 在JDK 6u23版本之后，HotSpot中默认就已经开启了逃逸分析。
@@ -451,7 +451,7 @@ https://docs.oracle.com/javase/8/docs/technotes/tools/unix/java.html
 - 线程同步的代价式相当高的，同步的后果是降低并发性和性能
 - 在动态编译同步块的时候，JIT编译器可以借助逃逸分析来判断同步块所使用的锁对象是否只能够被一个线程访问而没有被发布到其他线程。如果没有，那么JIT编译器在编译这个同步块的时候就会取消对这部分代码的同步。这样就能大大提高并发性和性能。这个取消同步的过程就叫同步省略，也叫锁消除。
 
-![图16](https://github.com/PayneZh/MarkDownPhotos/raw/master/res/%E5%90%8C%E6%AD%A5%E6%B6%88%E9%99%A4%E7%A4%BA%E4%BE%8B.jpg)
+![图16](https://github.com/PayneZh/MarkDownPhotos/raw/master/res/jvm%E8%BF%90%E8%A1%8C%E6%97%B6%E6%95%B0%E6%8D%AE%E5%8C%BA/%E5%90%8C%E6%AD%A5%E6%B6%88%E9%99%A4%E7%A4%BA%E4%BE%8B.jpg)
 
 3. 分离对象或标量替换。有的对象可能不需要作为一个连续的内存结构存在也可以被访问到。那么对象的部分（或全部）可以不存储在内存。而是存储在CPU寄存器中。
 
@@ -507,10 +507,10 @@ https://docs.oracle.com/javase/8/docs/technotes/tools/unix/java.html
 
 - 从线程共享的角度来看运行时数据区结构图
 - 
-![图17](https://github.com/PayneZh/MarkDownPhotos/raw/master/res/%E6%A0%88%E5%A0%86%E4%B8%8E%E6%96%B9%E6%B3%95%E5%8C%BA%E7%9A%84%E5%85%B3%E7%B3%BB%E5%9B%BE.jpg)
+![图17](https://github.com/PayneZh/MarkDownPhotos/raw/master/res/jvm%E8%BF%90%E8%A1%8C%E6%97%B6%E6%95%B0%E6%8D%AE%E5%8C%BA/%E6%A0%88%E5%A0%86%E4%B8%8E%E6%96%B9%E6%B3%95%E5%8C%BA%E7%9A%84%E5%85%B3%E7%B3%BB%E5%9B%BE.jpg)
 
 - 栈、堆、方法区的交互关系
-![图18](https://github.com/PayneZh/MarkDownPhotos/raw/master/res/%E6%A0%88%E5%A0%86%E4%B8%8E%E6%96%B9%E6%B3%95%E5%8C%BA%E7%9A%84%E5%85%B3%E7%B3%BB%E5%9B%BE1.jpg)
+![图18](https://github.com/PayneZh/MarkDownPhotos/raw/master/res/jvm%E8%BF%90%E8%A1%8C%E6%97%B6%E6%95%B0%E6%8D%AE%E5%8C%BA/%E6%A0%88%E5%A0%86%E4%B8%8E%E6%96%B9%E6%B3%95%E5%8C%BA%E7%9A%84%E5%85%B3%E7%B3%BB%E5%9B%BE1.jpg)
 
 ### 方法区的理解
 
@@ -530,7 +530,7 @@ https://docs.oracle.com/javase/8/docs/technotes/tools/unix/java.html
 在本质上，方法区和永久代并不等价。仅是对Hotspot而言的。《Java虚拟机规范》对如何实现方法区，不做统一要求。例如：BEA JRockit/IBM J9中不存在永久代的概念。
 - 现在来看，当年使用永久代，不是好的idea。导致Java程序更容易OOM（超过-XX：MaxPermSize上限）
 
-![图19](https://github.com/PayneZh/MarkDownPhotos/raw/master/res/%E6%96%B9%E6%B3%95%E5%8C%BA%E6%A6%82%E8%BF%B0.jpg)
+![图19](https://github.com/PayneZh/MarkDownPhotos/raw/master/res/jvm%E8%BF%90%E8%A1%8C%E6%97%B6%E6%95%B0%E6%8D%AE%E5%8C%BA/%E6%96%B9%E6%B3%95%E5%8C%BA%E6%A6%82%E8%BF%B0.jpg)
 
 - 而到了JDK8，终于完全废弃了永久代的概念，改用与JRockit、J9一样在本地内存中实现的元空间（Metaspace）来代替
 - 元空间的本质和永久代类似，都是对JVM规范中方法区的实现。不过元空间与永久代最大的区别在于：元空间不在虚拟机设置的内存中，而是使用本地内存
@@ -559,9 +559,9 @@ https://docs.oracle.com/javase/8/docs/technotes/tools/unix/java.html
 ### 方法区的内存结构
 
 先看一张图：
-![图20](https://github.com/PayneZh/MarkDownPhotos/raw/master/res/%E6%96%B9%E6%B3%95%E5%8C%BA%E5%86%85%E9%83%A8%E7%BB%93%E6%9E%84%E7%AE%80%E5%9B%BE.jpg)
+![图20](https://github.com/PayneZh/MarkDownPhotos/raw/master/res/jvm%E8%BF%90%E8%A1%8C%E6%97%B6%E6%95%B0%E6%8D%AE%E5%8C%BA/%E6%96%B9%E6%B3%95%E5%8C%BA%E5%86%85%E9%83%A8%E7%BB%93%E6%9E%84%E7%AE%80%E5%9B%BE.jpg)
 《深入理解Java虚拟机》书中对方法区（Method Area）存储内容描述如下：它用于存储已被虚拟机加载的**类型信息、常量、静态变量、即时编译器编译后的代码缓存**等。
-![图21](https://github.com/PayneZh/MarkDownPhotos/raw/master/res/%E6%96%B9%E6%B3%95%E5%8C%BA%E5%86%85%E5%AE%B9.jpg)
+![图21](https://github.com/PayneZh/MarkDownPhotos/raw/master/res/jvm%E8%BF%90%E8%A1%8C%E6%97%B6%E6%95%B0%E6%8D%AE%E5%8C%BA/%E6%96%B9%E6%B3%95%E5%8C%BA%E5%86%85%E5%AE%B9.jpg)
 
 #### 类型信息
 
@@ -619,7 +619,7 @@ class Order{
 - 要弄清楚方法区的运行时常量池，需要理解清楚ClassFile中的常量池。
 https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-4.html
 
-![图22](https://github.com/PayneZh/MarkDownPhotos/raw/master/res/%E5%B8%B8%E9%87%8F%E6%B1%A0%E5%9C%A8class%E6%96%87%E4%BB%B6%E4%B8%AD%E7%9A%84%E4%BD%8D%E7%BD%AE.jpg)
+![图22](https://github.com/PayneZh/MarkDownPhotos/raw/master/res/jvm%E8%BF%90%E8%A1%8C%E6%97%B6%E6%95%B0%E6%8D%AE%E5%8C%BA/%E5%B8%B8%E9%87%8F%E6%B1%A0%E5%9C%A8class%E6%96%87%E4%BB%B6%E4%B8%AD%E7%9A%84%E4%BD%8D%E7%BD%AE.jpg)
 一个有效的字节码文件中除了包含类的版本信息、字段、方法以及接口等描述信息外，还包含一项信息那就是常量池表（Constant Pool Table），包括各种字面量和对类型、域、和方法的符号引用。
 
 **为什么需要常量池**
@@ -671,13 +671,13 @@ Object foo = new Object();将会被编译成如下字节码：
 
 1. 首先明确：只有Hotspot才有永久代。BEA JRockit、IBM J9等来说，是不存在永久代的概念的。原则上如何实现方法区属于虚拟机实现细节，不受《Java虚拟机规范》管束，并不要求统一。
 2. Hotspot中方法区的变化：如下图
-![图23](https://github.com/PayneZh/MarkDownPhotos/raw/master/res/%E6%96%B9%E6%B3%95%E5%8C%BA%E6%BC%94%E8%BF%9B%E7%BB%86%E8%8A%82.jpg)
+![图23](https://github.com/PayneZh/MarkDownPhotos/raw/master/res/jvm%E8%BF%90%E8%A1%8C%E6%97%B6%E6%95%B0%E6%8D%AE%E5%8C%BA/%E6%96%B9%E6%B3%95%E5%8C%BA%E6%BC%94%E8%BF%9B%E7%BB%86%E8%8A%82.jpg)
 JDK6方法区图示如下：
-![图24](https://github.com/PayneZh/MarkDownPhotos/raw/master/res/JDK6%E6%96%B9%E6%B3%95%E5%8C%BA%E5%9B%BE.jpg)
+![图24](https://github.com/PayneZh/MarkDownPhotos/raw/master/res/jvm%E8%BF%90%E8%A1%8C%E6%97%B6%E6%95%B0%E6%8D%AE%E5%8C%BA/JDK6%E6%96%B9%E6%B3%95%E5%8C%BA%E5%9B%BE.jpg)
 JDK7方法区图示如下：
-![图25](https://github.com/PayneZh/MarkDownPhotos/raw/master/res/JDK7%E6%96%B9%E6%B3%95%E5%8C%BA%E5%9B%BE.jpg)
+![图25](https://github.com/PayneZh/MarkDownPhotos/raw/master/res/jvm%E8%BF%90%E8%A1%8C%E6%97%B6%E6%95%B0%E6%8D%AE%E5%8C%BA/JDK7%E6%96%B9%E6%B3%95%E5%8C%BA%E5%9B%BE.jpg)
 JDK8方法区图示如下：
-![图26](https://github.com/PayneZh/MarkDownPhotos/raw/master/res/JDK8%E6%96%B9%E6%B3%95%E5%8C%BA%E5%9B%BE.jpg)
+![图26](https://github.com/PayneZh/MarkDownPhotos/raw/master/res/jvm%E8%BF%90%E8%A1%8C%E6%97%B6%E6%95%B0%E6%8D%AE%E5%8C%BA/JDK8%E6%96%B9%E6%B3%95%E5%8C%BA%E5%9B%BE.jpg)
 
 永久代为什么要被元空间替换？
 
@@ -714,4 +714,4 @@ jdk7中将StringTable放到了堆空间中。因为永久代的回收效率很�
 
 ## 运行时数据区总结
 
-![图27](https://github.com/PayneZh/MarkDownPhotos/raw/master/res/jvm%E8%BF%90%E8%A1%8C%E6%97%B6%E6%95%B0%E6%8D%AE%E5%8C%BA%E6%80%BB%E7%BB%93.jpg)
+![图27](https://github.com/PayneZh/MarkDownPhotos/raw/master/res/jvm%E8%BF%90%E8%A1%8C%E6%97%B6%E6%95%B0%E6%8D%AE%E5%8C%BA/jvm%E8%BF%90%E8%A1%8C%E6%97%B6%E6%95%B0%E6%8D%AE%E5%8C%BA%E6%80%BB%E7%BB%93.jpg)
