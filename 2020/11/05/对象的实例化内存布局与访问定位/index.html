@@ -471,7 +471,25 @@
         <hr class="clearfix">
         <div class="card-content article-card-content">
             <div id="articleContent">
-                <h2 id="对象的实例化"><a href="#对象的实例化" class="headerlink" title="对象的实例化"></a>对象的实例化</h2><p><img src="https://github.com/PayneZh/MarkDownPhotos/raw/master/res/%E5%AF%B9%E8%B1%A1%E7%9A%84%E5%AE%9E%E4%BE%8B%E5%8C%96.jpg" alt="图1"></p>
+                <h2 id="对象的实例化"><a href="#对象的实例化" class="headerlink" title="对象的实例化"></a>对象的实例化</h2><p><img src="https://github.com/PayneZh/MarkDownPhotos/raw/master/res/%E5%AF%B9%E8%B1%A1%E7%9A%84%E5%AE%9E%E4%BE%8B%E5%8C%96%E5%86%85%E5%AD%98%E5%B8%83%E5%B1%80%E4%B8%8E%E8%AE%BF%E9%97%AE%E5%AE%9A%E4%BD%8D/%E5%AF%B9%E8%B1%A1%E7%9A%84%E5%AE%9E%E4%BE%8B%E5%8C%96.jpg" alt="图1"></p>
+<p>创建对象的步骤：</p>
+<ol>
+<li>判断对象对应的类是否加载、链接、初始化<br>虚拟机遇到一条new指令，首先去检查这个指令的参数能否在Meta space的常量池中定位到一个类的符号引用，并且检查这个符号引用代表的类是否已经被加载、解析和初始化。（即判断类元信息是否存在）。如果没有，那么在双亲委派模式下，使用当前类加载器以ClassLoader+包名+类名为key进行查找对应的class文件，如果没有找到文件，则抛出ClassNotFoundException异常，如果找到，则进行类加载，并生成对应的Class类对象</li>
+<li>为对象分配内存<br>首先计算对象占用空间大小,接着在堆中划分一块内存给新对象，如果实例成员变量是引用变量，仅分配引用变量空间即可，即4个字节大小。<br>如果内存是规整的，那么虚拟机将采用的是指针碰撞法（Bump The Pointer）来为对象分配内存。意思是所有用过的内存在一边，空闲的内存在另一边，中间放着一个指针作为分界点的指示器，分配内存就仅仅是把指针向空闲那边挪动一段与对象大小相等的距离罢了，如果垃圾收集器选择的是Serial、 ParNew这种基于压缩算法的，虚拟机采用这种分配方式。一般使用带有compact（整理）过程的收集器时，使用指针碰撞。<br>如果内存不是规整的，已使用的内存和未使用的内存相互交错，那么虚拟机将采用的是空闲列表法来为对象分配内存。意思是虚拟机维护了一个列表，记录上哪些内存块是可用的，再分配的时候从列表中找到一块足够大的空间划分给对象实例，并更新列表上的内容。这种分配方式称为空闲列表（Free List）。<br>选择哪种分配方式由Java堆是否规整决定，而Java堆是否规整又由所采用的垃圾收集器是否带有压缩整理功能决定</li>
+<li>处理并发安全问题</li>
+<li>初始化分配到的空间</li>
+<li>设置对象的对象头<br>将对象的所属类（即类的元数据信息）、对象的HashCode和对象的GC信息、锁信息等数据存储在对象的对象头中。这个过程的具体设置方式取决于JVM实现</li>
+<li>执行init方法进行初始化<br>在Java程序的视角看来，初始化才正式开始。初始化成员变量，执行实例化代码块，调用类的构造方法，并把堆内对象的首地址赋值给引用变量。<br>因此一般来说（由字节码中是否跟随有invokespecial指令所决定），new指令之后会接着就是执行方法，把对象按照程序员的意思进行初始化，这样一个真正可用的对象才算完全创建出来。</li>
+</ol>
+<h2 id="对象的内存布局"><a href="#对象的内存布局" class="headerlink" title="对象的内存布局"></a>对象的内存布局</h2><p><img src="https://github.com/PayneZh/MarkDownPhotos/raw/master/res/%E5%AF%B9%E8%B1%A1%E7%9A%84%E5%AE%9E%E4%BE%8B%E5%8C%96%E5%86%85%E5%AD%98%E5%B8%83%E5%B1%80%E4%B8%8E%E8%AE%BF%E9%97%AE%E5%AE%9A%E4%BD%8D/%E5%AF%B9%E8%B1%A1%E7%9A%84%E5%86%85%E5%AD%98%E5%B8%83%E5%B1%80.jpg" alt="图2"></p>
+<p><img src="https://github.com/PayneZh/MarkDownPhotos/raw/master/res/%E5%AF%B9%E8%B1%A1%E7%9A%84%E5%AE%9E%E4%BE%8B%E5%8C%96%E5%86%85%E5%AD%98%E5%B8%83%E5%B1%80%E4%B8%8E%E8%AE%BF%E9%97%AE%E5%AE%9A%E4%BD%8D/%E5%AF%B9%E8%B1%A1%E5%86%85%E5%AD%98%E5%B8%83%E5%B1%80%E8%AF%A6%E7%BB%86.jpg" alt="图3"></p>
+<h2 id="对象访问定位"><a href="#对象访问定位" class="headerlink" title="对象访问定位"></a>对象访问定位</h2><p>JVM是如何通过栈帧中的对象引用访问到其内部的对象示例的呢？</p>
+<p><img src="https://github.com/PayneZh/MarkDownPhotos/raw/master/res/%E5%AF%B9%E8%B1%A1%E7%9A%84%E5%AE%9E%E4%BE%8B%E5%8C%96%E5%86%85%E5%AD%98%E5%B8%83%E5%B1%80%E4%B8%8E%E8%AE%BF%E9%97%AE%E5%AE%9A%E4%BD%8D/%E5%AF%B9%E8%B1%A1%E8%AE%BF%E9%97%AE%E5%AE%9A%E4%BD%8D%E5%9B%BE%E7%A4%BA.jpg" alt="图4"></p>
+<p>对象访问定位思维导图</p>
+<p><img src="https://github.com/PayneZh/MarkDownPhotos/raw/master/res/%E5%AF%B9%E8%B1%A1%E7%9A%84%E5%AE%9E%E4%BE%8B%E5%8C%96%E5%86%85%E5%AD%98%E5%B8%83%E5%B1%80%E4%B8%8E%E8%AE%BF%E9%97%AE%E5%AE%9A%E4%BD%8D/%E5%AF%B9%E8%B1%A1%E8%AE%BF%E9%97%AE%E5%AE%9A%E4%BD%8D%E6%80%9D%E7%BB%B4%E5%AF%BC%E5%9B%BE.jpg" alt="图5"></p>
+<p>句柄访问图示</p>
+<p><img src="https://github.com/PayneZh/MarkDownPhotos/raw/master/res/%E5%AF%B9%E8%B1%A1%E7%9A%84%E5%AE%9E%E4%BE%8B%E5%8C%96%E5%86%85%E5%AD%98%E5%B8%83%E5%B1%80%E4%B8%8E%E8%AE%BF%E9%97%AE%E5%AE%9A%E4%BD%8D/%E5%8F%A5%E6%9F%84%E8%AE%BF%E9%97%AE%E5%9B%BE%E7%A4%BA.jpg" alt="图6"></p>
+<p>直接指针图示<br><img src="https://github.com/PayneZh/MarkDownPhotos/raw/master/res/%E5%AF%B9%E8%B1%A1%E7%9A%84%E5%AE%9E%E4%BE%8B%E5%8C%96%E5%86%85%E5%AD%98%E5%B8%83%E5%B1%80%E4%B8%8E%E8%AE%BF%E9%97%AE%E5%AE%9A%E4%BD%8D/%E7%9B%B4%E6%8E%A5%E6%8C%87%E9%92%88%E5%9B%BE%E7%A4%BA.jpg" alt="图7"></p>
 
             </div>
             <hr/>
@@ -722,7 +740,9 @@
                     <div class="summary block-with-text">
                         
                             对象的实例化
+创建对象的步骤：
 
+判断对象对应的类是否加载、链接、初始化虚拟机遇到一条new指令，首先去检查这个指令的参数能否在Meta space的常量池中定位到一个类的符号引用，并且检查这个符号引用代表的类是否已经被加载、解析和初始化。
                         
                     </div>
                     <div class="publish-info">
