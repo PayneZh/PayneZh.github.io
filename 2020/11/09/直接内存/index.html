@@ -4,7 +4,7 @@
 
 <head>
     <meta charset="utf-8">
-    <meta name="keywords" content="对象的实例化内存布局与访问定位, payne的博客">
+    <meta name="keywords" content="直接内存, payne的博客">
     <meta name="description" content="">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
@@ -16,7 +16,7 @@
     <!-- Global site tag (gtag.js) - Google Analytics -->
 
 
-    <title>对象的实例化内存布局与访问定位 | payne的博客</title>
+    <title>直接内存 | payne的博客</title>
     <link rel="icon" type="image/png" href="/favicon.png">
 
     <link rel="stylesheet" type="text/css" href="/libs/awesome/css/all.css">
@@ -308,12 +308,12 @@
 
 
 
-<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/19.jpg')">
+<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/20.jpg')">
     <div class="container" style="right: 0px;left: 0px;">
         <div class="row">
             <div class="col s12 m12 l12">
                 <div class="brand">
-                    <h1 class="description center-align post-title">对象的实例化内存布局与访问定位</h1>
+                    <h1 class="description center-align post-title">直接内存</h1>
                 </div>
             </div>
         </div>
@@ -455,7 +455,7 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-minus fa-fw"></i>发布日期:&nbsp;&nbsp;
-                    2020-11-05
+                    2020-11-09
                 </div>
                 
 
@@ -471,25 +471,13 @@
         <hr class="clearfix">
         <div class="card-content article-card-content">
             <div id="articleContent">
-                <h2 id="对象的实例化"><a href="#对象的实例化" class="headerlink" title="对象的实例化"></a>对象的实例化</h2><p><img src="https://github.com/PayneZh/MarkDownPhotos/raw/master/res/%E5%AF%B9%E8%B1%A1%E7%9A%84%E5%AE%9E%E4%BE%8B%E5%8C%96%E5%86%85%E5%AD%98%E5%B8%83%E5%B1%80%E4%B8%8E%E8%AE%BF%E9%97%AE%E5%AE%9A%E4%BD%8D/%E5%AF%B9%E8%B1%A1%E7%9A%84%E5%AE%9E%E4%BE%8B%E5%8C%96.jpg" alt="图1"></p>
-<p>创建对象的步骤：</p>
-<ol>
-<li>判断对象对应的类是否加载、链接、初始化<br>虚拟机遇到一条new指令，首先去检查这个指令的参数能否在Meta space的常量池中定位到一个类的符号引用，并且检查这个符号引用代表的类是否已经被加载、解析和初始化。（即判断类元信息是否存在）。如果没有，那么在双亲委派模式下，使用当前类加载器以ClassLoader+包名+类名为key进行查找对应的class文件，如果没有找到文件，则抛出ClassNotFoundException异常，如果找到，则进行类加载，并生成对应的Class类对象</li>
-<li>为对象分配内存<br>首先计算对象占用空间大小,接着在堆中划分一块内存给新对象，如果实例成员变量是引用变量，仅分配引用变量空间即可，即4个字节大小。<br>如果内存是规整的，那么虚拟机将采用的是指针碰撞法（Bump The Pointer）来为对象分配内存。意思是所有用过的内存在一边，空闲的内存在另一边，中间放着一个指针作为分界点的指示器，分配内存就仅仅是把指针向空闲那边挪动一段与对象大小相等的距离罢了，如果垃圾收集器选择的是Serial、 ParNew这种基于压缩算法的，虚拟机采用这种分配方式。一般使用带有compact（整理）过程的收集器时，使用指针碰撞。<br>如果内存不是规整的，已使用的内存和未使用的内存相互交错，那么虚拟机将采用的是空闲列表法来为对象分配内存。意思是虚拟机维护了一个列表，记录上哪些内存块是可用的，再分配的时候从列表中找到一块足够大的空间划分给对象实例，并更新列表上的内容。这种分配方式称为空闲列表（Free List）。<br>选择哪种分配方式由Java堆是否规整决定，而Java堆是否规整又由所采用的垃圾收集器是否带有压缩整理功能决定</li>
-<li>处理并发安全问题</li>
-<li>初始化分配到的空间</li>
-<li>设置对象的对象头<br>将对象的所属类（即类的元数据信息）、对象的HashCode和对象的GC信息、锁信息等数据存储在对象的对象头中。这个过程的具体设置方式取决于JVM实现</li>
-<li>执行init方法进行初始化<br>在Java程序的视角看来，初始化才正式开始。初始化成员变量，执行实例化代码块，调用类的构造方法，并把堆内对象的首地址赋值给引用变量。<br>因此一般来说（由字节码中是否跟随有invokespecial指令所决定），new指令之后会接着就是执行方法，把对象按照程序员的意思进行初始化，这样一个真正可用的对象才算完全创建出来。</li>
+                <h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><ol>
+<li>不是虚拟机运行时数据区的一部分，也不是《Java虚拟机规范》中定义的内存区域。</li>
+<li>直接内存是在Java堆外的、直接向系统申请的内存区间。</li>
+<li>来源于NIO，通过存在堆中的DirectByteBuffer操作Native内存</li>
+<li>通常，访问直接内存的速度会优于Java堆。即读写性能高。因此出于性能考虑，读写频繁的场合可能会考虑使用直接内存，Java的NIO库允许Java程序使用直接内存，用于数据缓冲区<br><img src="https://github.com/PayneZh/MarkDownPhotos/raw/master/res/java%E7%9B%B4%E6%8E%A5%E5%86%85%E5%AD%98/%E9%9D%9E%E7%9B%B4%E6%8E%A5%E7%BC%93%E5%86%B2%E5%8C%BA.jpg" alt="图1"><br>读写文件，需要与磁盘交互，需要由用户态切换到内核态。在内核态时，需要内存如上图的操作，使用IO，见上图，这里需要两份内存存储重复数据，效率低。</li>
 </ol>
-<h2 id="对象的内存布局"><a href="#对象的内存布局" class="headerlink" title="对象的内存布局"></a>对象的内存布局</h2><p><img src="https://github.com/PayneZh/MarkDownPhotos/raw/master/res/%E5%AF%B9%E8%B1%A1%E7%9A%84%E5%AE%9E%E4%BE%8B%E5%8C%96%E5%86%85%E5%AD%98%E5%B8%83%E5%B1%80%E4%B8%8E%E8%AE%BF%E9%97%AE%E5%AE%9A%E4%BD%8D/%E5%AF%B9%E8%B1%A1%E7%9A%84%E5%86%85%E5%AD%98%E5%B8%83%E5%B1%80.jpg" alt="图2"></p>
-<p><img src="https://github.com/PayneZh/MarkDownPhotos/raw/master/res/%E5%AF%B9%E8%B1%A1%E7%9A%84%E5%AE%9E%E4%BE%8B%E5%8C%96%E5%86%85%E5%AD%98%E5%B8%83%E5%B1%80%E4%B8%8E%E8%AE%BF%E9%97%AE%E5%AE%9A%E4%BD%8D/%E5%AF%B9%E8%B1%A1%E5%86%85%E5%AD%98%E5%B8%83%E5%B1%80%E8%AF%A6%E7%BB%86.jpg" alt="图3"></p>
-<h2 id="对象访问定位"><a href="#对象访问定位" class="headerlink" title="对象访问定位"></a>对象访问定位</h2><p>JVM是如何通过栈帧中的对象引用访问到其内部的对象示例的呢？</p>
-<p><img src="https://github.com/PayneZh/MarkDownPhotos/raw/master/res/%E5%AF%B9%E8%B1%A1%E7%9A%84%E5%AE%9E%E4%BE%8B%E5%8C%96%E5%86%85%E5%AD%98%E5%B8%83%E5%B1%80%E4%B8%8E%E8%AE%BF%E9%97%AE%E5%AE%9A%E4%BD%8D/%E5%AF%B9%E8%B1%A1%E8%AE%BF%E9%97%AE%E5%AE%9A%E4%BD%8D%E5%9B%BE%E7%A4%BA.jpg" alt="图4"></p>
-<p>对象访问定位思维导图</p>
-<p><img src="https://github.com/PayneZh/MarkDownPhotos/raw/master/res/%E5%AF%B9%E8%B1%A1%E7%9A%84%E5%AE%9E%E4%BE%8B%E5%8C%96%E5%86%85%E5%AD%98%E5%B8%83%E5%B1%80%E4%B8%8E%E8%AE%BF%E9%97%AE%E5%AE%9A%E4%BD%8D/%E5%AF%B9%E8%B1%A1%E8%AE%BF%E9%97%AE%E5%AE%9A%E4%BD%8D%E6%80%9D%E7%BB%B4%E5%AF%BC%E5%9B%BE.jpg" alt="图5"></p>
-<p>句柄访问图示</p>
-<p><img src="https://github.com/PayneZh/MarkDownPhotos/raw/master/res/%E5%AF%B9%E8%B1%A1%E7%9A%84%E5%AE%9E%E4%BE%8B%E5%8C%96%E5%86%85%E5%AD%98%E5%B8%83%E5%B1%80%E4%B8%8E%E8%AE%BF%E9%97%AE%E5%AE%9A%E4%BD%8D/%E5%8F%A5%E6%9F%84%E8%AE%BF%E9%97%AE%E5%9B%BE%E7%A4%BA.jpg" alt="图6"></p>
-<p>直接指针图示<br><img src="https://github.com/PayneZh/MarkDownPhotos/raw/master/res/%E5%AF%B9%E8%B1%A1%E7%9A%84%E5%AE%9E%E4%BE%8B%E5%8C%96%E5%86%85%E5%AD%98%E5%B8%83%E5%B1%80%E4%B8%8E%E8%AE%BF%E9%97%AE%E5%AE%9A%E4%BD%8D/%E7%9B%B4%E6%8E%A5%E6%8C%87%E9%92%88%E5%9B%BE%E7%A4%BA.jpg" alt="图7"></p>
+<p><img src="https://github.com/PayneZh/MarkDownPhotos/raw/master/res/java%E7%9B%B4%E6%8E%A5%E5%86%85%E5%AD%98/%E7%9B%B4%E6%8E%A5%E7%BC%93%E5%86%B2%E5%8C%BA.jpg" alt="图2"><br>使用NIO时，如上图。操作系统划出的直接缓存区可以被java代码直接访问，只有一份。NIO适合对大文件的读写操作。<br>5. 也可能导致OutOfMemoryError异常<br>6. 由于直接内存在Java堆外，因此它的大小不会直接受限于-Xmx指定的最大堆大小，但是系统内存是有限的，Java堆和直接内存的总和依然受限于操作系统能给出的最大内存。<br>7. 缺点：分配回收成本高，不受JVM内存回收管理<br>8. 直接内存大小可以通过MaxDirectMemorySize设置<br>9. 如果不指定，默认与堆最大值-Xmx参数值一致</p>
 
             </div>
             <hr/>
@@ -515,7 +503,7 @@
                     </i>
                 </span>
                 <span class="reprint-info">
-                    <a href="https://paynezh.github.io/2020/11/05/%E5%AF%B9%E8%B1%A1%E7%9A%84%E5%AE%9E%E4%BE%8B%E5%8C%96%E5%86%85%E5%AD%98%E5%B8%83%E5%B1%80%E4%B8%8E%E8%AE%BF%E9%97%AE%E5%AE%9A%E4%BD%8D/">https://paynezh.github.io/2020/11/05/%E5%AF%B9%E8%B1%A1%E7%9A%84%E5%AE%9E%E4%BE%8B%E5%8C%96%E5%86%85%E5%AD%98%E5%B8%83%E5%B1%80%E4%B8%8E%E8%AE%BF%E9%97%AE%E5%AE%9A%E4%BD%8D/</a>
+                    <a href="https://paynezh.github.io/2020/11/09/%E7%9B%B4%E6%8E%A5%E5%86%85%E5%AD%98/">https://paynezh.github.io/2020/11/09/%E7%9B%B4%E6%8E%A5%E5%86%85%E5%AD%98/</a>
                 </span>
             </div>
             <div class="reprint__notice">
@@ -722,9 +710,10 @@
 <article id="prenext-posts" class="prev-next articles">
     <div class="row article-row">
         
-        <div class="article col s12 m6" data-aos="fade-up">
+        <div class="article col s12 m6" data-aos="fade-up" data-aos="fade-up">
             <div class="article-badge left-badge text-color">
-                <i class="fas fa-chevron-left"></i>&nbsp;上一篇</div>
+                <i class="far fa-dot-circle"></i>&nbsp;本篇
+            </div>
             <div class="card">
                 <a href="/2020/11/09/%E7%9B%B4%E6%8E%A5%E5%86%85%E5%AD%98/">
                     <div class="card-image">
@@ -746,9 +735,9 @@
                         
                     </div>
                     <div class="publish-info">
-                        <span class="publish-date">
-                            <i class="far fa-clock fa-fw icon-date"></i>2020-11-09
-                        </span>
+                            <span class="publish-date">
+                                <i class="far fa-clock fa-fw icon-date"></i>2020-11-09
+                            </span>
                         <span class="publish-author">
                             
                             <i class="fas fa-bookmark fa-fw icon-category"></i>
@@ -761,6 +750,7 @@
                         </span>
                     </div>
                 </div>
+
                 
                 <div class="card-action article-tags">
                     
@@ -779,31 +769,27 @@
                 下一篇&nbsp;<i class="fas fa-chevron-right"></i>
             </div>
             <div class="card">
-                <a href="/2020/10/27/%E6%9F%A5%E6%89%BE%E7%AE%97%E6%B3%95/">
+                <a href="/2020/11/05/%E5%AF%B9%E8%B1%A1%E7%9A%84%E5%AE%9E%E4%BE%8B%E5%8C%96%E5%86%85%E5%AD%98%E5%B8%83%E5%B1%80%E4%B8%8E%E8%AE%BF%E9%97%AE%E5%AE%9A%E4%BD%8D/">
                     <div class="card-image">
                         
                         
-                        <img src="/medias/featureimages/23.jpg" class="responsive-img" alt="查找算法">
+                        <img src="/medias/featureimages/19.jpg" class="responsive-img" alt="对象的实例化内存布局与访问定位">
                         
-                        <span class="card-title">查找算法</span>
+                        <span class="card-title">对象的实例化内存布局与访问定位</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
                     <div class="summary block-with-text">
                         
-                            查找算法介绍在java中，我们常用的查找有四种：
+                            对象的实例化
+创建对象的步骤：
 
-顺序（线性）查找
-二分查找/折半查找
-插值查找
-斐波那契查找
-
-线性查找算法有一个数列：{1,8,10,89,1000，1234}，判断数列中是否包含此名称【顺序查找】要求：如果找到了，就
+判断对象对应的类是否加载、链接、初始化虚拟机遇到一条new指令，首先去检查这个指令的参数能否在Meta space的常量池中定位到一个类的符号引用，并且检查这个符号引用代表的类是否已经被加载、解析和初始化。
                         
                     </div>
                     <div class="publish-info">
                             <span class="publish-date">
-                                <i class="far fa-clock fa-fw icon-date"></i>2020-10-27
+                                <i class="far fa-clock fa-fw icon-date"></i>2020-11-05
                             </span>
                         <span class="publish-author">
                             
@@ -820,8 +806,8 @@
                 
                 <div class="card-action article-tags">
                     
-                    <a href="/tags/%E7%BC%96%E7%A8%8B%E5%9F%BA%E7%A1%80/">
-                        <span class="chip bg-color">编程基础</span>
+                    <a href="/tags/java%E5%9F%BA%E7%A1%80/">
+                        <span class="chip bg-color">java基础</span>
                     </a>
                     
                 </div>
