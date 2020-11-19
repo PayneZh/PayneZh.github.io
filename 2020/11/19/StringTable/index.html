@@ -4,7 +4,7 @@
 
 <head>
     <meta charset="utf-8">
-    <meta name="keywords" content="编程方法论, payne的博客">
+    <meta name="keywords" content="StringTable, payne的博客">
     <meta name="description" content="">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
@@ -16,7 +16,7 @@
     <!-- Global site tag (gtag.js) - Google Analytics -->
 
 
-    <title>编程方法论 | payne的博客</title>
+    <title>StringTable | payne的博客</title>
     <link rel="icon" type="image/png" href="/favicon.png">
 
     <link rel="stylesheet" type="text/css" href="/libs/awesome/css/all.css">
@@ -308,12 +308,12 @@
 
 
 
-<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/1.jpg')">
+<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/21.jpg')">
     <div class="container" style="right: 0px;left: 0px;">
         <div class="row">
             <div class="col s12 m12 l12">
                 <div class="brand">
-                    <h1 class="description center-align post-title">编程方法论</h1>
+                    <h1 class="description center-align post-title">StringTable</h1>
                 </div>
             </div>
         </div>
@@ -430,8 +430,8 @@
                     
                     <div class="article-tag">
                         
-                            <a href="/tags/%E7%BC%96%E7%A8%8B%E5%9F%BA%E7%A1%80/">
-                                <span class="chip bg-color">编程基础</span>
+                            <a href="/tags/java%E5%9F%BA%E7%A1%80/">
+                                <span class="chip bg-color">java基础</span>
                             </a>
                         
                     </div>
@@ -455,7 +455,7 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-minus fa-fw"></i>发布日期:&nbsp;&nbsp;
-                    2020-11-12
+                    2020-11-19
                 </div>
                 
 
@@ -471,9 +471,55 @@
         <hr class="clearfix">
         <div class="card-content article-card-content">
             <div id="articleContent">
-                <h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>要具备编写高质量代码的能力，你需要学习一些编程方法论，其中就包含面向对象（我们可以把它看成一种设计思想）、设计原则、设计模式、编程规范、重构技巧等。</p>
-<p>现在，主流的编程范式或者是编程风格有三种，它们分别是<strong>面向过程、面向对象和函数式编程</strong>。面向对象这种编程风格又是这其中最主流的。现在比较流行的编程语言大部分都是面向对象编程语言。大部分项目也都是基于面向对象编程风格开发的。面向对象编程因为其具有丰富的特性（封装、抽象、继承、多态），可以实现很多复杂的设计思路，是很多<strong>设计原则、设计模式编码实现的基础</strong>。</p>
-<p><img src="https://github.com/PayneZh/MarkDownPhotos/raw/master/res/designpattern/%E7%BC%96%E5%86%99%E9%AB%98%E8%B4%A8%E9%87%8F%E4%BB%A3%E7%A0%81%E7%9F%A5%E8%AF%86%E5%9B%BE%E8%B0%B1.png" alt="图1"></p>
+                <h2 id="String的基本特性"><a href="#String的基本特性" class="headerlink" title="String的基本特性"></a>String的基本特性</h2><ul>
+<li><p>String:字符串，使用一对“”引起来表示。</p>
+</li>
+<li><p>String声明为final的，不可被继承。</p>
+</li>
+<li><p>String实现了Serializable接口：表示字符串是支持序列化的。实现了Comparable接口：表示String可以比较大小。</p>
+</li>
+<li><p>String在jdk8及以前内部定义了final char[] value用于存储字符串数据。jdk9时改为byte[]。（<a target="_blank" rel="noopener" href="https://openjdk.java.net/jeps/254%EF%BC%89">https://openjdk.java.net/jeps/254）</a></p>
+</li>
+<li><p>String:代表不可变的字符序列。简称：不可变性。</p>
+<blockquote>
+<blockquote>
+<p>当对字符串重新赋值时，需要重写指定内存区域赋值，不能使用原有的value进行赋值。<br>当对现有的字符串进行连接操作时，也需要重新指定内存区域赋值，不能使用原有的value进行赋值。<br>当调用String的replace()方法修改指定字符或字符串时，也需要重新指定内存区域赋值，不能使用原有的value进行赋值。</p>
+</blockquote>
+</blockquote>
+</li>
+<li><p>通过字面量的方式（区别于new）给一个字符串赋值，此时的字符串值声明在字符串常量池中。</p>
+</li>
+<li><p>字符串常量池中是不会存储相同内容的字符串的。 </p>
+<blockquote>
+<blockquote>
+<p>String的String Pool是一个固定大小的HashTable，默认值大小长度是1009.如果放进String Pool的String非常多，就会造成Hash冲突严重，从而导致链表会很长，而链表长了后直接会造成的影响就是当调用String.intern时性能会大幅下滑。<br>使用-XX:StringTableSize可设置StringTable的长度<br>在jdk6中StringTable是固定的，就是1009的长度，所以如果常量池中的字符串过多就会导致效率下降很快。StringTableSize设置没有要求<br>在jdk7中，StringTable的长度默认值是60013,在jdk8中，1009是可设置的最小值。</p>
+</blockquote>
+</blockquote>
+</li>
+</ul>
+<h2 id="String的内存分配"><a href="#String的内存分配" class="headerlink" title="String的内存分配"></a>String的内存分配</h2><ul>
+<li>在Java语言中有8种基本数据类型和一种比较特殊的类型String。这些类型为了使它们在运行过程中速度更快、更节省内存，都提供了一种常量池的概念。</li>
+<li>常量池就类似一个Java系统级别提供的缓存。8种基本数据类型的常量池都是系统协调的，String类型的常量池比较特殊。它的主要使用方法有两种。<blockquote>
+<blockquote>
+<p>直接使用双引号声明出来的String对象会直接存储在常量池中。比如：String info = “abc”；<br>如果不是用双引号声明的String对象，可以使用String提供的intern()方法。这个后面重点谈</p>
+</blockquote>
+</blockquote>
+</li>
+<li>Java 6及以前，字符串常量池存放在永久代</li>
+<li>Java 7中Oracle的工程师对字符串池的逻辑做了很大的改变，即将字符串常量池的位置调整到Java堆内。<blockquote>
+<blockquote>
+<p>所有的字符串都保存在堆（Heap）中，和其它普通对象一样，这样可以让你在进行调优应用时仅需要调整堆大小就可以了。<br>字符串常量池概念原本使用得比较多，但是这个改动使得我们有足够的理由让我们重新考虑在Java 7中使用String.intern()。</p>
+</blockquote>
+</blockquote>
+</li>
+<li>Java8元空间。字符串常量池在堆</li>
+</ul>
+<p><img src="https://github.com/PayneZh/MarkDownPhotos/raw/master/res/jvm%E8%BF%90%E8%A1%8C%E6%97%B6%E6%95%B0%E6%8D%AE%E5%8C%BA/JDK6%E6%96%B9%E6%B3%95%E5%8C%BA%E5%9B%BE.jpg" alt="图1"><br><img src="https://github.com/PayneZh/MarkDownPhotos/raw/master/res/jvm%E8%BF%90%E8%A1%8C%E6%97%B6%E6%95%B0%E6%8D%AE%E5%8C%BA/JDK7%E6%96%B9%E6%B3%95%E5%8C%BA%E5%9B%BE.jpg" alt="图2"><br><img src="https://github.com/PayneZh/MarkDownPhotos/raw/master/res/jvm%E8%BF%90%E8%A1%8C%E6%97%B6%E6%95%B0%E6%8D%AE%E5%8C%BA/JDK8%E6%96%B9%E6%B3%95%E5%8C%BA%E5%9B%BE.jpg" alt="图3"></p>
+<p>StringTable为什么要调整？<br>官网：<a target="_blank" rel="noopener" href="https://www.oracle.com/technetwork/java/javase/jdk7-relnotes-418459.html#jdk7changes">https://www.oracle.com/technetwork/java/javase/jdk7-relnotes-418459.html#jdk7changes</a></p>
+<ol>
+<li>permSize默认比较小，容易导致oom</li>
+<li>永久代垃圾回收频率低</li>
+</ol>
 
             </div>
             <hr/>
@@ -499,7 +545,7 @@
                     </i>
                 </span>
                 <span class="reprint-info">
-                    <a href="https://paynezh.github.io/2020/11/12/%E7%BC%96%E7%A8%8B%E6%96%B9%E6%B3%95%E8%AE%BA/">https://paynezh.github.io/2020/11/12/%E7%BC%96%E7%A8%8B%E6%96%B9%E6%B3%95%E8%AE%BA/</a>
+                    <a href="https://paynezh.github.io/2020/11/19/StringTable/">https://paynezh.github.io/2020/11/19/StringTable/</a>
                 </span>
             </div>
             <div class="reprint__notice">
@@ -537,8 +583,8 @@
                     
                         <div class="article-tag">
                             
-                                <a href="/tags/%E7%BC%96%E7%A8%8B%E5%9F%BA%E7%A1%80/">
-                                    <span class="chip bg-color">编程基础</span>
+                                <a href="/tags/java%E5%9F%BA%E7%A1%80/">
+                                    <span class="chip bg-color">java基础</span>
                                 </a>
                             
                         </div>
@@ -706,9 +752,10 @@
 <article id="prenext-posts" class="prev-next articles">
     <div class="row article-row">
         
-        <div class="article col s12 m6" data-aos="fade-up">
+        <div class="article col s12 m6" data-aos="fade-up" data-aos="fade-up">
             <div class="article-badge left-badge text-color">
-                <i class="fas fa-chevron-left"></i>&nbsp;上一篇</div>
+                <i class="far fa-dot-circle"></i>&nbsp;本篇
+            </div>
             <div class="card">
                 <a href="/2020/11/19/StringTable/">
                     <div class="card-image">
@@ -731,9 +778,9 @@ String实现了Serializable接口：表示字符串是支持序列化的。实�
                         
                     </div>
                     <div class="publish-info">
-                        <span class="publish-date">
-                            <i class="far fa-clock fa-fw icon-date"></i>2020-11-19
-                        </span>
+                            <span class="publish-date">
+                                <i class="far fa-clock fa-fw icon-date"></i>2020-11-19
+                            </span>
                         <span class="publish-author">
                             
                             <i class="fas fa-bookmark fa-fw icon-category"></i>
@@ -746,6 +793,7 @@ String实现了Serializable接口：表示字符串是支持序列化的。实�
                         </span>
                     </div>
                 </div>
+
                 
                 <div class="card-action article-tags">
                     
@@ -764,26 +812,25 @@ String实现了Serializable接口：表示字符串是支持序列化的。实�
                 下一篇&nbsp;<i class="fas fa-chevron-right"></i>
             </div>
             <div class="card">
-                <a href="/2020/11/10/%E6%89%A7%E8%A1%8C%E5%BC%95%E6%93%8E/">
+                <a href="/2020/11/12/%E7%BC%96%E7%A8%8B%E6%96%B9%E6%B3%95%E8%AE%BA/">
                     <div class="card-image">
                         
                         
-                        <img src="/medias/featureimages/22.jpg" class="responsive-img" alt="执行引擎">
+                        <img src="/medias/featureimages/1.jpg" class="responsive-img" alt="编程方法论">
                         
-                        <span class="card-title">执行引擎</span>
+                        <span class="card-title">编程方法论</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
                     <div class="summary block-with-text">
                         
-                            概述
-执行引擎是Java虚拟机核心的组成部分之一。
-“虚拟机”是一个相对于“物理机”的概念，这两种机器都有代码执行能力，其区别是物理机的执行引擎是直接建立在处理器、缓存、指令集和操作系统层面上的，而虚拟机的执行引擎则是由软件自行实现的，因此
+                            概述要具备编写高质量代码的能力，你需要学习一些编程方法论，其中就包含面向对象（我们可以把它看成一种设计思想）、设计原则、设计模式、编程规范、重构技巧等。
+现在，主流的编程范式或者是编程风格有三种，它们分别是面向过程、面向对象和函数式编程。面
                         
                     </div>
                     <div class="publish-info">
                             <span class="publish-date">
-                                <i class="far fa-clock fa-fw icon-date"></i>2020-11-10
+                                <i class="far fa-clock fa-fw icon-date"></i>2020-11-12
                             </span>
                         <span class="publish-author">
                             
@@ -800,8 +847,8 @@ String实现了Serializable接口：表示字符串是支持序列化的。实�
                 
                 <div class="card-action article-tags">
                     
-                    <a href="/tags/java%E5%9F%BA%E7%A1%80/">
-                        <span class="chip bg-color">java基础</span>
+                    <a href="/tags/%E7%BC%96%E7%A8%8B%E5%9F%BA%E7%A1%80/">
+                        <span class="chip bg-color">编程基础</span>
                     </a>
                     
                 </div>
