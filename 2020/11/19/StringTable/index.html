@@ -520,6 +520,15 @@
 <li>permSize默认比较小，容易导致oom</li>
 <li>永久代垃圾回收频率低</li>
 </ol>
+<h2 id="String的基本操作"><a href="#String的基本操作" class="headerlink" title="String的基本操作"></a>String的基本操作</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">public class Memory &#123;</span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        int i &#x3D; 1;</span><br><span class="line">        Object obj &#x3D; new Object();</span><br><span class="line">        Memory mem &#x3D; new Memory();</span><br><span class="line">        mem.foo(obj);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    private void foo(Object param)&#123;</span><br><span class="line">        String str &#x3D; param.toString();</span><br><span class="line">        System.out.println(str);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>以上代码的内存分布图如下：<br><img src="https://github.com/PayneZh/MarkDownPhotos/raw/master/res/StringTable/%E6%9F%90%E4%BB%A3%E7%A0%81%E7%9A%84%E5%86%85%E5%AD%98%E5%88%86%E9%85%8D%E5%9B%BE.jpg" alt="图4"></p>
+<h2 id="字符串拼接操作"><a href="#字符串拼接操作" class="headerlink" title="字符串拼接操作"></a>字符串拼接操作</h2><ol>
+<li>常量与常量的拼接结果在常量池，原理是编译器优化。</li>
+<li>常量池中不会存在相同内容的常量。</li>
+<li>只要其中有一个是变量，结果就在堆中。变量拼接的原理是StringBuilder</li>
+<li>如果拼接的结果调用intern()方法，则主动将常量池中还没有的字符串对象放入池中，并返回此对象地址。</li>
+</ol>
 
             </div>
             <hr/>
