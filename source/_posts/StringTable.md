@@ -42,3 +42,31 @@ StringTable为什么要调整？
 官网：https://www.oracle.com/technetwork/java/javase/jdk7-relnotes-418459.html#jdk7changes
 1. permSize默认比较小，容易导致oom
 2. 永久代垃圾回收频率低
+
+## String的基本操作
+
+```
+public class Memory {
+    public static void main(String[] args) {
+        int i = 1;
+        Object obj = new Object();
+        Memory mem = new Memory();
+        mem.foo(obj);
+    }
+
+    private void foo(Object param){
+        String str = param.toString();
+        System.out.println(str);
+    }
+}
+```
+
+以上代码的内存分布图如下：
+![图4](https://github.com/PayneZh/MarkDownPhotos/raw/master/res/StringTable/%E6%9F%90%E4%BB%A3%E7%A0%81%E7%9A%84%E5%86%85%E5%AD%98%E5%88%86%E9%85%8D%E5%9B%BE.jpg)
+
+## 字符串拼接操作
+
+1. 常量与常量的拼接结果在常量池，原理是编译器优化。
+2. 常量池中不会存在相同内容的常量。
+3. 只要其中有一个是变量，结果就在堆中。变量拼接的原理是StringBuilder
+4. 如果拼接的结果调用intern()方法，则主动将常量池中还没有的字符串对象放入池中，并返回此对象地址。
