@@ -4,7 +4,7 @@
 
 <head>
     <meta charset="utf-8">
-    <meta name="keywords" content="I/O模型, payne的博客">
+    <meta name="keywords" content="垃圾回收, payne的博客">
     <meta name="description" content="">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
@@ -16,7 +16,7 @@
     <!-- Global site tag (gtag.js) - Google Analytics -->
 
 
-    <title>I/O模型 | payne的博客</title>
+    <title>垃圾回收 | payne的博客</title>
     <link rel="icon" type="image/png" href="/favicon.png">
 
     <link rel="stylesheet" type="text/css" href="/libs/awesome/css/all.css">
@@ -308,12 +308,12 @@
 
 
 
-<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/3.jpg')">
+<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/11.jpg')">
     <div class="container" style="right: 0px;left: 0px;">
         <div class="row">
             <div class="col s12 m12 l12">
                 <div class="brand">
-                    <h1 class="description center-align post-title">I/O模型</h1>
+                    <h1 class="description center-align post-title">垃圾回收</h1>
                 </div>
             </div>
         </div>
@@ -455,7 +455,7 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-minus fa-fw"></i>发布日期:&nbsp;&nbsp;
-                    2020-11-19
+                    2020-11-24
                 </div>
                 
 
@@ -471,37 +471,55 @@
         <hr class="clearfix">
         <div class="card-content article-card-content">
             <div id="articleContent">
-                <h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>在讲 BIO,NIO,AIO 之前先来回顾一下这样几个概念：同步与异步，阻塞与非阻塞。</p>
-<p>同步 ：两个同步任务相互依赖，并且一个任务必须以依赖于另一任务的某种方式执行。 比如在A-&gt;B事件模型中，你需要先完成 A 才能执行B。 再换句话说，同步调用中被调用者未处理完请求之前，调用不返回，调用者会一直等待结果的返回。<br>异步： 两个异步的任务完全独立的，一方的执行不需要等待另外一方的执行。再换句话说，异步调用种一调用就返回结果不需要等待结果返回，当结果返回的时候通过回调函数或者其他方式拿着结果再做相关事情，</p>
-<p>阻塞和非阻塞<br>阻塞： 阻塞就是发起一个请求，调用者一直等待请求结果返回，也就是当前线程会被挂起，无法从事其他任务，只有当条件就绪才能继续。<br>非阻塞： 非阻塞就是发起一个请求，调用者不用一直等着结果返回，可以先去干其他事情。</p>
-<p>如何区分 “同步/异步 ”和 “阻塞/非阻塞” 呢？<br>同步/异步是从行为角度描述事物的，而阻塞和非阻塞描述的当前事物的状态（等待调用结果时的状态）。</p>
-<ol>
-<li>I/O模型简单理解：就是用什么样的通道进行数据的发送和接收，很大程度上决定了编程通道的性能。</li>
-<li>Java共支持3种网络编程模型I/O模式：BIO、NIO、AIO</li>
-<li>Java BIO：同步并阻塞（传统阻塞型），服务实现模式为一个连接一个线程，即客户端有连接请求时服务端就需要启动一个线程进行处理，如果这个连接不做任何事情会造成不必要的线程开销，适用于连接数目比较小且固定的架构。</li>
-<li>Java NIO:同步非阻塞，服务器实现模式为一个线程处理多个请求（连接），即客户端发送的连接请求都会注册到多路复用器上，多路复用器轮询到连接有I/O请求就进行处理,适用于连接数多且连接比较短的架构</li>
-<li>Java AIO(NIO2):异步非阻塞，AIO引入异步通道的概念，采用了Proactor模式，简化了程序编写，有效的请求才启动线程，它的特点是先由操作系统完成后才通知服务端程序启动线程去处理，一般适用于连接数较多且连接时间较长的应用。</li>
-</ol>
-<h2 id="Java-BIO基本介绍"><a href="#Java-BIO基本介绍" class="headerlink" title="Java BIO基本介绍"></a>Java BIO基本介绍</h2><ol>
-<li>Java BIO就是传统的java io编程，其相关的类和接口在java.io</li>
-<li>BIO(blocking I/O)：同步阻塞，服务实现模式为一个连接一个线程，即客户端有连接请求时服务端就需要启动一个线程进行处理，如果这个连接不做任何事情会造成不必要的线程开销，可以通过线程池机制改善（实现多个客户连接服务器）</li>
-<li>BIO方式适用于连接数目比较小且固定的架构。这种方式对服务器资源要求比较高，并发局限于应用中，JDK1.4以前的唯一选择，程序简单易理解。</li>
-</ol>
-<h2 id="Java-NIO基本介绍"><a href="#Java-NIO基本介绍" class="headerlink" title="Java NIO基本介绍"></a>Java NIO基本介绍</h2><ol>
-<li>Java NIO全称java non-blocking IO,是指JDK提供的新API，从JDK1.4开始，Java提供了一系列改进的输入/输出的新特性，被统称为NIO(New IO),是同步非阻塞的</li>
-<li>NIO相关类都被放在java.nio包及子包下，并且对原java.io包中的很多类进行改写。</li>
-<li>NIO有三大核心部分：Channel(通道),Buffer(缓冲区),Selector(选择器)</li>
-<li>NIO是面向缓冲区，或者面向块编程的，数据读取到一个它稍后处理的缓冲区，需要时可在缓冲区中前后移动，这就增加了处理过程中的灵活性，使用它可以提供非阻塞式的高伸缩性网络。</li>
-<li>Java NIO的非阻塞模式，使一个线程从某通道发送请求或者读取数据，但是它仅能得到目前可用的数据，如果目前没有数据可用时，就什么都不会获取，而不是保持线程阻塞，所以直至数据变的可以读取之前，该线程可以继续做其他的事情。非阻塞写也是如此，一个线程请求写入一些数据到某通道，但不需要等待它完全写入，这个线程同时可以去做别的事情。</li>
-<li>通俗理解：NIO是可以做到用一个线程来处理多个操作的。假设有10000个请求过来，根据实际情况，可以分配50或者100个线程来处理，不像之前的阻塞IO那样，非得分配10000个。</li>
-<li>HTTP2.0使用了多路复用的技术，做到同一个连接并发处理多个请求，而且并发请求的数量比HTTP1.1大了好几个数量级。</li>
-</ol>
-<p>NIO和BIO的比较</p>
-<ol>
-<li>BIO以流的方式处理数据，而NIO以块的方式处理数据，块I/O的效率比流I/O高很多</li>
-<li>BIO是阻塞的，NIO则是非阻塞的</li>
-<li>BIO基于字节流和字符流进行操作，而NIO基于Channel(通道)和Buffer(缓冲区)进行操作，数据总是从通道读取到缓冲区中，或者从缓冲区写入到通道中。Selector(选择器)用于监听多个通道的事件（比如：连接请求，数据到达等），因此使用单个线程就可以监听多个客户端通道。</li>
-</ol>
+                <h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>什么是垃圾：</p>
+<ul>
+<li>垃圾收集，不是Java语言的伴生产物。早在1960年，第一门开始使用内存动态分配和垃圾收集技术的Lisp语言诞生。</li>
+<li>关于垃圾收集有三个经典问题：<blockquote>
+<p>哪些内存需要回收？<br>什么时候回收？<br>如何回收？</p>
+</blockquote>
+</li>
+<li>垃圾收集机制是Java的招牌能力，极大地提高了开发效率。如今，垃圾收集几乎成为现代语言的标配，即使经过如此长时间的发展，Java的垃圾收集机制仍然在不断的演进中，不同大小的设备、不同特征的应用场景，对垃圾收集提出了新的挑战。 </li>
+<li>什么是垃圾呢？<blockquote>
+<p>垃圾是指在运行程序中没有任何指针指向的对象，这个对象就是需要被回收的垃圾。<br>外文：An object is considered garbage when it can no longer be reached from any pointer in the running program。</p>
+</blockquote>
+</li>
+<li>如果不及时对内存中的垃圾进行清理，那么，这些垃圾对象所占用的内存空间会一直保留到应用程序结束，被保留的空间无法被其它对象使用。甚至可能导致内存溢出。</li>
+</ul>
+<p>为什么需要GC：</p>
+<ul>
+<li>对于高级语言来说，一个基本认知是如果不进行垃圾回收，内存迟早都会被消耗完，因为不断地分配内存空间而不进行回收，就好像不停地生产生活垃圾而从来不打扫一样。</li>
+<li>除了释放没用的对象，垃圾回收也可以清除内存里的记录碎片。碎片整理将所占用的堆内存移到堆的一端，以便JVM将整理出的内存分配给新的对象。</li>
+<li>随着应用程序所应付的业务越来越大、复杂，用户越来越多，没有GC就不能保证应用程序的正常进行。而经常造成STW的GC又跟不上实际的需求，所以才会不断地尝试对GC进行优化。</li>
+</ul>
+<p>早期垃圾回收：</p>
+<ul>
+<li>在早期的C/C++时代，垃圾回收基本上是手工进行的。开发人员可以使用new关键字进行内存申请，并使用delete关键字进行内存释放。</li>
+<li>这种方式可以灵活控制内存释放的时间。但是会给开发人员带来频繁申请和释放内存的管理负担。倘若有一处内存区间由于程序员编码的问题忘记被回收，那么就会产生内存泄漏，垃圾对象永远无法被清除，随着系统运行时间的不断增长，垃圾对象所耗内存可能持续上升，直到出现内存溢出并造成应用程序崩溃。</li>
+<li>现在，除了Java以外，C#、Python、Ruby等语言都使用了自动垃圾回收的思想，也是未来发展趋势。可以说，这种自动化的内存分配和垃圾回收的方式已经成为现代开发语言的必备的标准。</li>
+</ul>
+<p>Java垃圾回收机制：</p>
+<ul>
+<li>自动内存管理，无需开发人员手动参与内存的分配与回收，这样降低内存泄漏和内存溢出的风险<blockquote>
+<p>没有垃圾回收器，java也会和cpp一样，各种悬垂指针，野指针，泄漏问题让你头疼不已。</p>
+</blockquote>
+</li>
+<li>自动内存管理机制，将程序员从繁重的内存管理中释放出来，可以更专心地专注于业务开发</li>
+<li>oracle官网关于垃圾回收的介绍<blockquote>
+<p><a target="_blank" rel="noopener" href="https://docs.oracle.com/javase/8/docs/technotes/guides/vm/gctuning/toc.html">https://docs.oracle.com/javase/8/docs/technotes/guides/vm/gctuning/toc.html</a></p>
+</blockquote>
+</li>
+<li>对于Java开发人员而言，自动内存管理就像是一个黑匣子，如果过度依赖于”自动”，那么这将会是一场灾难，最严重的就会弱化Java开发人员在程序出现内存溢出时定位问题和解决问题的能力</li>
+<li>此时，了解JVM的自动内存分配和内存回收原理就显得非常重要，只有在真正了解JVM是如何管理内存后，我们才能够在遇见OutOfMemoryError时，快速地根据错误异常日志定位问题和解决问题。</li>
+<li>当需要排查各种内存溢出、内存泄漏问题时，当垃圾收集成为系统达到更高并发量的瓶颈时，我们就必须对这些“自动化”的技术实施必要的监控和调节。</li>
+<li>垃圾回收器可以对年轻代回收，也可以对老年代回收，甚至是全堆和方法区的回收。<blockquote>
+<p>其中，Java堆是垃圾收集器的工作重点。</p>
+</blockquote>
+</li>
+<li>从次数上讲：<blockquote>
+<p>频繁收集Young区<br>较少收集Old区<br>基本不动Perm区（或元空间）</p>
+</blockquote>
+</li>
+</ul>
 
             </div>
             <hr/>
@@ -527,7 +545,7 @@
                     </i>
                 </span>
                 <span class="reprint-info">
-                    <a href="https://paynezh.github.io/2020/11/19/I-O%E6%A8%A1%E5%9E%8B/">https://paynezh.github.io/2020/11/19/I-O%E6%A8%A1%E5%9E%8B/</a>
+                    <a href="https://paynezh.github.io/2020/11/24/%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6/">https://paynezh.github.io/2020/11/24/%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6/</a>
                 </span>
             </div>
             <div class="reprint__notice">
@@ -734,9 +752,10 @@
 <article id="prenext-posts" class="prev-next articles">
     <div class="row article-row">
         
-        <div class="article col s12 m6" data-aos="fade-up">
+        <div class="article col s12 m6" data-aos="fade-up" data-aos="fade-up">
             <div class="article-badge left-badge text-color">
-                <i class="fas fa-chevron-left"></i>&nbsp;上一篇</div>
+                <i class="far fa-dot-circle"></i>&nbsp;本篇
+            </div>
             <div class="card">
                 <a href="/2020/11/24/%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6/">
                     <div class="card-image">
@@ -761,9 +780,9 @@
                         
                     </div>
                     <div class="publish-info">
-                        <span class="publish-date">
-                            <i class="far fa-clock fa-fw icon-date"></i>2020-11-24
-                        </span>
+                            <span class="publish-date">
+                                <i class="far fa-clock fa-fw icon-date"></i>2020-11-24
+                            </span>
                         <span class="publish-author">
                             
                             <i class="fas fa-bookmark fa-fw icon-category"></i>
@@ -776,6 +795,7 @@
                         </span>
                     </div>
                 </div>
+
                 
                 <div class="card-action article-tags">
                     
@@ -794,24 +814,20 @@
                 下一篇&nbsp;<i class="fas fa-chevron-right"></i>
             </div>
             <div class="card">
-                <a href="/2020/11/19/StringTable/">
+                <a href="/2020/11/19/I-O%E6%A8%A1%E5%9E%8B/">
                     <div class="card-image">
                         
                         
-                        <img src="/medias/featureimages/21.jpg" class="responsive-img" alt="StringTable">
+                        <img src="/medias/featureimages/3.jpg" class="responsive-img" alt="I/O模型">
                         
-                        <span class="card-title">StringTable</span>
+                        <span class="card-title">I/O模型</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
                     <div class="summary block-with-text">
                         
-                            String的基本特性
-String:字符串，使用一对“”引起来表示。
-
-String声明为final的，不可被继承。
-
-String实现了Serializable接口：表示字符串是支持序列化的。实现了Comparable接口：表示Stri
+                            概述在讲 BIO,NIO,AIO 之前先来回顾一下这样几个概念：同步与异步，阻塞与非阻塞。
+同步 ：两个同步任务相互依赖，并且一个任务必须以依赖于另一任务的某种方式执行。 比如在A-&gt;B事件模型中，你需要先完成 A 才能执行B。 再换
                         
                     </div>
                     <div class="publish-info">
