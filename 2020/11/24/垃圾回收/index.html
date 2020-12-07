@@ -638,7 +638,28 @@
 <p>分区算法：</p>
 <p>一般来说，在相同条件下，堆空间越大，一次GC时所需要的时间就越长，有关GC产生的停顿也越长，为了更好地控制GC产生的停顿时间，将一块大的内存区域分割成多个小块、根据目标的停顿时间，每次合理地回收若干个小区间，而不是整个堆空间，从而减少一次GC所产生的停顿。<br>分代算法将按照对象的生命周期长短划分成两个部分，分区算法将整个堆空间划分成连续的不同小区间。每个小区间都独立使用，独立回收。这种算法的好处是可以控制一次回收多少个小区间。<br><img src="https://github.com/PayneZh/MarkDownPhotos/raw/master/res/JVM-GC/G1%E5%A0%86%E5%88%86%E5%8C%BA.jpg" alt="图7"></p>
 <h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>注意，这些知识基本的算法思路，实际GC实现过程要复杂的多，目前还在发展中的前沿GC都是复合算法，并且并行和并发兼备。</p>
-
+<h2 id="垃圾回收相关概念"><a href="#垃圾回收相关概念" class="headerlink" title="垃圾回收相关概念"></a>垃圾回收相关概念</h2><h3 id="System-gc-理解"><a href="#System-gc-理解" class="headerlink" title="System.gc()理解"></a>System.gc()理解</h3><ul>
+<li>在默认情况下，通过System.gc()或者Runtime.getRuntime().gc()的调用，会显式触发<strong>Full GC</strong>，同时对老年代和新生代进行回收，尝试释放被丢弃对象占用的内存</li>
+<li>然而System.gc()调用附带一个免责声明，无法保证对垃圾收集器的调用。</li>
+<li>JVM实现者可以通过System.gc()调用来决定JVM的GC行为。而一般情况下，垃圾回收应该是自动进行的，无线手动触发，否则就太过于麻烦了。在一些特殊情况下，如我们正在编写一个性能基准，我们可以在运行之间调用System.gc()。</li>
+</ul>
+<h3 id="内存溢出与内存泄漏"><a href="#内存溢出与内存泄漏" class="headerlink" title="内存溢出与内存泄漏"></a>内存溢出与内存泄漏</h3><p>内存溢出(OOM)</p>
+<ul>
+<li>内存溢出相对于内存泄漏来说，尽管更容易被理解，但是同样的，内存溢出也是引发程序崩溃的罪魁祸首之一。</li>
+<li>由于GC一直在发展，所有一般情况下，除非应用程序占用的内存增长速度非常快，造成垃圾回收已经跟不上内存消耗的速度，否则不太容易出现OOM的情况。</li>
+<li>大多数情况下，GC会进行各种年龄段的垃圾回收，实在不行了就放大招，来一次独占式的Full GC操作，这时候会回收大量的内存，供应用程序继续使用。</li>
+<li>javadoc中对OutOfMemoryError的解释是，没有空闲内存，并且垃圾收集器也无法提供更多内存。</li>
+<li>首先说没有空闲内存的情况：说明java虚拟机的堆内存不够。原因有二:<br>① Java虚拟机的堆内存设置不够。<br>比如：可能存在内存泄漏问题；也很有可能就是堆的大小不合适，比如我们要处理比较可观的数据量，但是没有显示指定JVM堆大小或者指定数值偏小。我们可以通过参数-Xms -Xmx来调整。<br>② 代码中创建了大量大对象，并且长时间不能被垃圾收集器收集(存在被引用)<br>对于老版本的Oracle JDK，因为永久代的大小是有限的，并且JVM对永久代垃圾回收（如，常量池回收、卸载不再需要的类型）非常不积极，所以当我们不断添加新类型的时候，永久代出现OutOfMemoryError也非常多见，尤其是在运行时存在大量动态类型生成的场合；类似intern字符串缓存占用太多空间，也会导致OOM问题。对应的异常信息，会标记出来和永久代相关：”java.lang.OutOfMemoryError:PermGen space”,<br>随着元数据区的引入，方法区内存已经不再那么窘迫，所以相应的OOM有所改观，出现OOM，异常信息则变成了:”java.lang.OutOfMemoryError:Metaspace”,直接内存不足，也会导致OOM。</li>
+<li>这里面隐含着一层意思是，在抛出OutOfMemoryError之前，通常垃圾收集器会被触发，尽其所能去清理出空间。<blockquote>
+<p>例如：在引用机制分析中，涉及到JVM会去尝试回收软引用指向的对象等。<br>在java.nio.Bits.reserveMemory()方法中，我们能清除的看到，System.gc()会被调用，以清理空间。</p>
+</blockquote>
+</li>
+<li>当然，也不是在任何情况下垃圾收集器都会被触发的<blockquote>
+<p>比如，我们去分配一个超大对象，类似一个超大数组超过堆的最大值，JVM可以判断出垃圾收集并不能解决这个问题，所以直接抛出OutOfMemoryError。</p>
+</blockquote>
+</li>
+</ul>
+<h3 id="Stop-The-World"><a href="#Stop-The-World" class="headerlink" title="Stop The World"></a>Stop The World</h3><h3 id="垃圾回收的并行与并发"><a href="#垃圾回收的并行与并发" class="headerlink" title="垃圾回收的并行与并发"></a>垃圾回收的并行与并发</h3><h3 id="安全点与安全区域"><a href="#安全点与安全区域" class="headerlink" title="安全点与安全区域"></a>安全点与安全区域</h3><h3 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h3>
             </div>
             <hr/>
 
