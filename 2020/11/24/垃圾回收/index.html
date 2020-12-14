@@ -734,7 +734,104 @@
 <li>无需手动编码，其内部配合引用队列使用。</li>
 <li>在GC时，终结器引用入队。由Finalizer线程通过终结器引用找到被引用对象并调用它的finalize()方法，第二次GC时才能回收被引用对象。</li>
 </ol>
-
+<h2 id="垃圾回收器"><a href="#垃圾回收器" class="headerlink" title="垃圾回收器"></a>垃圾回收器</h2><p>概述</p>
+<ul>
+<li>垃圾收集器没有在规范中进行过多的规定，可以由不同的厂商、不同版本的JVM来实现。</li>
+<li>由于JDK的版本处于高速迭代过程中，因此Java发展至今已经衍生出了众多的GC版本。</li>
+<li>从不同角度分析垃圾收集器，可以将GC分为不同的类型。</li>
+</ul>
+<h3 id="GC分类与性能指标"><a href="#GC分类与性能指标" class="headerlink" title="GC分类与性能指标"></a>GC分类与性能指标</h3><p><strong>GC（垃圾回收器）分类</strong>：<br>按线程数分，可以分为串行垃圾回收器和并行垃圾回收器。</p>
+<ul>
+<li>串行回收指的是在同一时间段内只允许有一个CPU用于执行垃圾回收操作，此时工作线程被暂停，直至垃圾收集工作结束。<blockquote>
+<p>在诸如单CPU处理器或者较小的应用内存等硬件平台不是特别优越的场合，串行回收器的性能表现可以超过并行回收器和并发回收器。所以，串行回收默认被应用在客户端的Client模式下的JVM中<br>在并发能力比较强的CPU上，并行回收器产生的停顿时间要短于串行回收器。</p>
+</blockquote>
+</li>
+<li>和串行回相反，并行收集可以运用多个CPU同时执行垃圾回收，因此提升了应用的吞吐量，不过并行回收仍然与串行回收一样，采用独占式，使用了”Stop-The-World”机制。</li>
+</ul>
+<p>按照工作模式分，可以分为并发式垃圾回收器和独占式垃圾回收器。</p>
+<ul>
+<li>并发式垃圾回收器与应用程序线程交替工作，以尽可能减少应用程序的停顿时间。</li>
+<li>独占式垃圾回收器（Stop the world）一旦运行，就停止应用程序中的所有用户线程，直到垃圾回收过程完全结束。</li>
+</ul>
+<p>按碎片处理方式分，可分为压缩式垃圾回收和非压缩式垃圾回收器。</p>
+<ul>
+<li>压缩式垃圾回收器会在回收完成后，对存活对象进行压缩整理，消除回收后的碎片。</li>
+<li>非压缩式的垃圾回收器不进行这步操作。</li>
+</ul>
+<p>按工作的内存区间分，又可分为年轻代垃圾回收器和老年代垃圾回收器</p>
+<p><strong>评估GC的性能指标</strong>：</p>
+<ul>
+<li><strong>吞吐量</strong>：运行用户代码的时间占总运行时间的比例（总运行时间：程序的运行时间+内存回收的时间）</li>
+<li>垃圾收集开销：吞吐量的补数，垃圾收集所用时间与总运行时间的比例</li>
+<li><strong>暂停时间</strong>：执行垃圾收集时，程序的工作线程被暂停的时间。</li>
+<li>收集频率：相对于应用程序的执行，收集操作发生的频率。</li>
+<li><strong>内存占用</strong>：Java堆区所占的内存大小。</li>
+<li>快速：一个对象从诞生到被回收所经历的时间。</li>
+</ul>
+<p>吞吐量，暂停时间，内存占用这三者共同构成一个”不可能三角”。三者总体的表现会随着技术进步而越来越好。一款优秀的收集器通常最多同时满足其中的两项。<br>这三项里，暂停时间的重要性日益凸显。因为随着硬件发展，内存占用多些越来越容易，硬件性能的提升也有助于降低收集器运行时对应用程序的影响，即提高了吞吐量。而内存的扩大，对延迟反而带来负面效果。<br>简单来说，主要抓住两点：吞吐量和暂停时间。</p>
+<p>吞吐量详述：</p>
+<ul>
+<li>吞吐量就是CPU用于运行用户代码的时间与CPU总消耗时间的比值，即吞吐量=运行用户代码时间/(运行用户代码时间+垃圾收集时间)。<br>比如：虚拟机总共运行了100分钟，其中垃圾收集花掉1分钟，那吞吐量就是99%</li>
+<li>这种情况下，应用程序能容忍较高的暂停时间，因此，高吞吐量的应用程序有更长的时间基准，快速响应是不必考虑的。</li>
+<li>吞吐量优先，意味着在单位时间内，STW的时间最短：0.2 + 0.2 = 0.4(见下图所示)<br><img src="https://github.com/PayneZh/MarkDownPhotos/raw/master/res/JVM-GC/%E5%90%9E%E5%90%90%E9%87%8F%E5%92%8C%E4%BD%8E%E5%BB%B6%E8%BF%9F%E5%AF%B9%E6%AF%94.jpg" alt="图9"></li>
+</ul>
+<p>暂停时间详述：</p>
+<ul>
+<li>“暂停时间”是指一个时间段内应用程序线程暂停，让GC线程执行的状态<br>例如，GC期间100毫秒的暂停时间意味着在这100毫秒期间内没有应用程序线程是活动的。</li>
+<li>暂停时间优先，意味着尽可能让单次STW的时间最短：0.1+0.1+0.1+0.1+0.1 = 0.5(见上图)</li>
+</ul>
+<p>吞吐量VS暂停时间</p>
+<ul>
+<li>高吞吐量较好因为这会让应用程序的最终用户感觉只用应用程序线程在做”生产性”工作。直觉上，吞吐量越高程序运行越快。</li>
+<li>低暂停时间（低延迟）较好因为从最终用户的角度来看不管是GC还是其他原因导致一个应用被挂起始终是不好的。这取决于应用程序的类型，有时候甚至短暂的200毫秒暂停都可能打断终端用户体验。因此，具有低的较大暂停时间是非常重要的，特别是对于一个交互式应用程序。</li>
+<li>不幸的是”高吞吐量”和”低暂停时间”是一对相互竞争的目标（矛盾）。<blockquote>
+<p>因为如果选择以吞吐量优先，那么必然需要降低内存回收的执行效率，但是这样会导致GC需要更长的暂停时间来执行内存回收。<br>相反的，如果选择以低延迟优先为原则，那么为了降低每次执行内存回收时的暂停时间，也只能频繁地执行内存回收，但这又引起了年轻代内存的缩减和导致程序吞吐量的下降。</p>
+</blockquote>
+</li>
+</ul>
+<p>在设计(或使用)GC算法时，我们必须确定我们的目标:一个GC算法只可能针对两个目标之一（即只专注于较大吞吐量或最小暂停时间），或尝试找到一个二者的折中。<br>现在标准：在最大吞吐量优先的情况下，降低停顿时间。</p>
+<h3 id="不同的垃圾回收器概述"><a href="#不同的垃圾回收器概述" class="headerlink" title="不同的垃圾回收器概述"></a>不同的垃圾回收器概述</h3><p>垃圾收集机制是Java的招牌能力，极大地提高了开发效率，那么，Java常见的垃圾收集器有哪些？</p>
+<p>垃圾收集器发展史</p>
+<p>有了虚拟机，就一定需要收集垃圾的机制，这就是Garbage Collection，对应的产品我们称为Garbage Collector。</p>
+<ul>
+<li>1999年随JDK1.3.1一起来的是串行方式的Serial GC，它是第一款GC，ParNow垃圾收集器是Serial收集器的多线程版本</li>
+<li>2002年2月26日，Parallel GC和Concurrent Mark Sweep GC跟随JDK1.4.2一起发布。</li>
+<li>Parallel GC在JDK6之后成为HotSpot默认GC。</li>
+<li>2012年，在JDK1.7u4版本中，G1可用</li>
+<li>2017年，JDK9中G1变成默认的垃圾收集器，以替代CMS。</li>
+<li>2018年3月，JDK10中G1垃圾回收器的并行完整垃圾回收，实现并行性来改善最坏情况下的延迟。</li>
+<li>2018年9月，JDK11发布，引入Epsilon垃圾回收器，又被称为”NO-Op”(无操作)回收器。同时，引入ZGC：可伸缩的低延迟垃圾回收器（Experimental）。</li>
+<li>2019年3月，JDK12发布，增强G1，自动返回未用堆内存给操作系统。同时，引入Shenandoah GC：低停顿时间的GC（Experimental）。</li>
+<li>2019年9月，JDK13发布，增强ZGC，自动返回未用堆内存给操作系统。</li>
+<li>2020年3月，JDK14发布，删除CMS垃圾回收器，扩展ZGC在macOS和Windows上的应用</li>
+</ul>
+<p>7种经典的垃圾收集器</p>
+<ul>
+<li>串行回收器：Serial、Serial Old</li>
+<li>并行回收器：ParNew、Parallel Scavenge、Parallel Old</li>
+<li>并发回收器：CMS、G1<br>官方文档：<a target="_blank" rel="noopener" href="https://www.oracle.com/technetwork/java/javase/tech/memorymanagement-whitepaper-1-150020.pdf">https://www.oracle.com/technetwork/java/javase/tech/memorymanagement-whitepaper-1-150020.pdf</a></li>
+</ul>
+<p>7款经典垃圾收集器与垃圾分代之间的关系。<br><img src="https://github.com/PayneZh/MarkDownPhotos/raw/master/res/JVM-GC/%E5%9E%83%E5%9C%BE%E6%94%B6%E9%9B%86%E5%99%A8%E4%B8%8E%E5%9E%83%E5%9C%BE%E5%88%86%E4%BB%A3%E5%85%B3%E7%B3%BB.jpg" alt="图10"></p>
+<ul>
+<li>新生代收集器：Serial、ParNew、Parallel Scavenge</li>
+<li>老年代收集器：Serial Old、Parallel Old、CMS</li>
+<li>整堆收集器：G1</li>
+</ul>
+<p>垃圾收集器的组合关系<br><img src="https://github.com/PayneZh/MarkDownPhotos/raw/master/res/JVM-GC/%E5%9E%83%E5%9C%BE%E6%94%B6%E9%9B%86%E5%99%A8%E7%9A%84%E7%BB%84%E5%90%88%E5%85%B3%E7%B3%BB.jpg" alt="图11"></p>
+<ol>
+<li>两个收集器间有连线，表明它们可以搭配使用：<br>Serial/Serial Old、Serial/CMS、ParNow/Serial Old、ParNew/CMS、Parallel Scavenge/Serial Old、Parallel Scavenge/Parallel Old、G1</li>
+<li>其中Serial Old作为CMS出现”Concurrent Mode Failure”失败的后备预案。</li>
+<li>（红色虚线）由于维护和兼容性测试的成本，在JDK 8时将Serial+CMS、ParNew+Serial Old这两个组合声明为废弃（JEP 173），并在JDK 9中完全取消了这些组合的支持（JEP214），即：移除。</li>
+<li>（绿色虚线）JDK 14中：弃用Parallel Scavenge和Serial Old GC组合（JEP 366）</li>
+<li>（青色虚线）JDK 14中：删除CMS垃圾回收器（JEP 363）</li>
+</ol>
+<p>为什么要有很多收集器，一个不够吗？因为Java的使用场景很多，移动端，服务器等，所以就需要针对不同的场景，提供不同的垃圾收集器，提高垃圾收集的性能。<br>虽然我们会对各个收集器进行比较，但并非为了挑选一个最好的收集器出来。没有一种放之四海而皆准、任何场景下都适用的完美收集器存在，更加没有万能的收集器。所以我们选择的只是对具体应用最合适的收集器。</p>
+<p>查看默认的垃圾收集器</p>
+<ul>
+<li>-XX:+PrintCommandLineFlags:查看命令行相关参数（包含适用的垃圾收集器）</li>
+<li>适用命名行命令：jinfo -flag 相关垃圾收集器参数 进程ID</li>
+</ul>
+<h3 id="Serial回收器：串行回收"><a href="#Serial回收器：串行回收" class="headerlink" title="Serial回收器：串行回收"></a>Serial回收器：串行回收</h3><h3 id="ParNew回收器：并行回收"><a href="#ParNew回收器：并行回收" class="headerlink" title="ParNew回收器：并行回收"></a>ParNew回收器：并行回收</h3><h3 id="Parallel回收器：吞吐量优先"><a href="#Parallel回收器：吞吐量优先" class="headerlink" title="Parallel回收器：吞吐量优先"></a>Parallel回收器：吞吐量优先</h3><h3 id="CMS回收器：低延迟"><a href="#CMS回收器：低延迟" class="headerlink" title="CMS回收器：低延迟"></a>CMS回收器：低延迟</h3><h3 id="G1回收器：区域化分代式"><a href="#G1回收器：区域化分代式" class="headerlink" title="G1回收器：区域化分代式"></a>G1回收器：区域化分代式</h3><h3 id="垃圾回收器总结"><a href="#垃圾回收器总结" class="headerlink" title="垃圾回收器总结"></a>垃圾回收器总结</h3><h3 id="GC日志分析"><a href="#GC日志分析" class="headerlink" title="GC日志分析"></a>GC日志分析</h3><h3 id="垃圾回收器的新发展"><a href="#垃圾回收器的新发展" class="headerlink" title="垃圾回收器的新发展"></a>垃圾回收器的新发展</h3>
             </div>
             <hr/>
 
