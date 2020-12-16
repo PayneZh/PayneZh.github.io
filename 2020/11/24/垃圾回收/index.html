@@ -868,7 +868,43 @@
 <li>在程序中，开发人员可以通过选项”-XX:+UseParNewGC”手动指定使用ParNew收集器执行内存回收任务。它表示年轻代使用并行收集器，不影响老年代。</li>
 <li>-XX:ParallelGCThreads限制线程数量，默认开启和CPU数量相同的线程数。</li>
 </ul>
-<h3 id="Parallel回收器：吞吐量优先"><a href="#Parallel回收器：吞吐量优先" class="headerlink" title="Parallel回收器：吞吐量优先"></a>Parallel回收器：吞吐量优先</h3><h3 id="CMS回收器：低延迟"><a href="#CMS回收器：低延迟" class="headerlink" title="CMS回收器：低延迟"></a>CMS回收器：低延迟</h3><h3 id="G1回收器：区域化分代式"><a href="#G1回收器：区域化分代式" class="headerlink" title="G1回收器：区域化分代式"></a>G1回收器：区域化分代式</h3><h3 id="垃圾回收器总结"><a href="#垃圾回收器总结" class="headerlink" title="垃圾回收器总结"></a>垃圾回收器总结</h3><h3 id="GC日志分析"><a href="#GC日志分析" class="headerlink" title="GC日志分析"></a>GC日志分析</h3><h3 id="垃圾回收器的新发展"><a href="#垃圾回收器的新发展" class="headerlink" title="垃圾回收器的新发展"></a>垃圾回收器的新发展</h3>
+<h3 id="Parallel回收器：吞吐量优先"><a href="#Parallel回收器：吞吐量优先" class="headerlink" title="Parallel回收器：吞吐量优先"></a>Parallel回收器：吞吐量优先</h3><ul>
+<li>HotSpot的年轻代中除了拥有ParNew收集器是基于并行回收的以外，Parallel Scavenge收集器同样也采用了复制算法、并行回收和”Stop-The-World”机制。</li>
+<li>那么Parallel收集器的出现是否多此一举？<blockquote>
+<p>和ParNew收集器不同，Parallel Scavenge收集器的目标则是达到一个可控制的吞吐量(Throughput),它也被称为吞吐量优先的垃圾收集器。<br>自适应调节策略也是Parallel Scavenge与ParNew一个重要区别。</p>
+</blockquote>
+</li>
+<li>高吞吐量则可以高效率地利用CPU时间，尽快完成程序的运算任务，主要适合在后台运算而不需要太多交互的任务。因此，常见在服务器环境中使用。例如，那些执行批量处理、订单处理、工资支付、科学计算的应用程序。</li>
+<li>Parallel收集器在JDK1.6时提供了用于执行老年代垃圾收集的Parallel Old收集器，用来代替老年代的Serial Old收集器。</li>
+<li>Parallel Old收集器采用了标记-压缩算法，但同样也是基于并行回收和”Stop-The-World”机制。</li>
+<li>在程序吞吐量优先的应用场景中，Parallel收集器和Parallel Old收集器的组合，在Server模式下的内存回收性能很不错。</li>
+<li>在Java8中，默认是此垃圾收集器。</li>
+</ul>
+<p>参数配置：</p>
+<ul>
+<li>-XX:+UseParallelGC 手动指定年轻代使用Parallel并行收集器执行内存回收任务。</li>
+<li>-XX:+UseParallelOldGC 手动指定老年代都是使用并行回收收集器。<blockquote>
+<p>分别适用于新生代和老年代。默认jdk8是开启的。<br>上面两个参数，默认开启一个，另一个也会被开启。（互相激活）</p>
+</blockquote>
+</li>
+<li>-XX:ParallelGCThreads 设置年轻代并行收集器的线程数，一般地，最好与CPU数量相等，以避免过多的线程数影响垃圾收集性能。<blockquote>
+<p>在默认情况下，当CPU数量小于8个，ParallelGCThreads的值等于CPU数量。<br>当CPU数量大于8个，ParallelGCThreads的值等于3+[5*CPU_Count]/8。</p>
+</blockquote>
+</li>
+<li>-XX:MaxGCPauseMillis 设置垃圾收集器最大停顿时间（即STW的时间）。单位是毫秒。<blockquote>
+<p>为了尽可能地把停顿时间控制在MaxGCPauseMillis以内，收集器在工作时会调整Java堆大小或者其他一些参数。<br>对于用户来讲，停顿时间越短体验越好。但是在服务器端，我们注重高并发，整体的吞吐量。所以服务器端适合Parallel，进行控制。<br>该参数使用需谨慎。</p>
+</blockquote>
+</li>
+<li>-XX:GCTimeRatio 垃圾收集时间占总时间的比例（= 1/(N+1))。<br>用于衡量吞吐量的大小。<blockquote>
+<p>取值范围(0,100)。默认值99，也就是垃圾回收时间不超过1%，<br>与前一个-XX:MaxGCPauseMillis参数有一定矛盾性。暂停时间越长，Ratio参数就容易超过设定的比例。</p>
+</blockquote>
+</li>
+<li>-XX:+UseAdaptiveSizePolicy 设置Parallel Scavenge收集器具有自适应调节策略<blockquote>
+<p>在这种模式下，年轻代的大小、Eden和Survivor的比例、晋升老年代的对象年龄等参数会被自动调整，已达到在堆大小、吞吐量和停顿时间之间的平衡点。<br>在手动调优比较困难的场合，可以直接使用这种自适应的方式，仅指定虚拟机的最大堆、目标的吞吐量（GCTimeRatio）和停顿时间（MaxGCPauseMillis），让虚拟机自己完成调优工作。</p>
+</blockquote>
+</li>
+</ul>
+<h3 id="CMS回收器：低延迟"><a href="#CMS回收器：低延迟" class="headerlink" title="CMS回收器：低延迟"></a>CMS回收器：低延迟</h3><h3 id="G1回收器：区域化分代式"><a href="#G1回收器：区域化分代式" class="headerlink" title="G1回收器：区域化分代式"></a>G1回收器：区域化分代式</h3><h3 id="垃圾回收器总结"><a href="#垃圾回收器总结" class="headerlink" title="垃圾回收器总结"></a>垃圾回收器总结</h3><h3 id="GC日志分析"><a href="#GC日志分析" class="headerlink" title="GC日志分析"></a>GC日志分析</h3><h3 id="垃圾回收器的新发展"><a href="#垃圾回收器的新发展" class="headerlink" title="垃圾回收器的新发展"></a>垃圾回收器的新发展</h3>
             </div>
             <hr/>
 
