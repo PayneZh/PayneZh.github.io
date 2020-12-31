@@ -1112,7 +1112,24 @@
 <li><p>另外，大家需要多关注垃圾回收器这一章的各种常用的参数。</p>
 </li>
 </ul>
-<h3 id="GC日志分析"><a href="#GC日志分析" class="headerlink" title="GC日志分析"></a>GC日志分析</h3><h3 id="垃圾回收器的新发展"><a href="#垃圾回收器的新发展" class="headerlink" title="垃圾回收器的新发展"></a>垃圾回收器的新发展</h3>
+<h3 id="GC日志分析"><a href="#GC日志分析" class="headerlink" title="GC日志分析"></a>GC日志分析</h3><p>通过阅读GC日志，我们可以了解Java虚拟机内存分配与回收策略：</p>
+<p><strong>内存分配与垃圾回收的参数列表</strong></p>
+<p>-XX:+PrintGC           输出GC日志。类似：-verbose:gc<br>-XX:+PrintGCDetails    输出GC的详细日志。<br>-XX:+PrintGCTimeStamps 输出GC的时间戳（以基准时间的形式）<br>-XX:+PrintGCDateStamps 输出GC的时间戳（以日期的形式。如2013-05-04T21:53:59.234+0800）<br>-XX:+PrintHeapAtGC     在进行GC的前后打印出堆的信息<br>-Xloggc:../logs/gc.log 日志文件的输出路径</p>
+<p>日志说明：</p>
+<ul>
+<li>“[GC”和”[Full GC”说明了这次垃圾收集的停顿类型，如果有”Full”则说明GC发生了”Stop The World”</li>
+<li>使用Serial收集器在新生代的名字是Default New Generation，因此显示的是”[DefNew”</li>
+<li>使用ParNew收集器在新生代的名字会变成”[ParNew”,意思是”Parallel New Generation”</li>
+<li>使用Parallel Scavenge收集器在新生代的名字是”[PsYoungGen”</li>
+<li>老年代的收集和新生代道理一样，名字也是收集器决定的。</li>
+<li>使用G1收集器的话，会显示为”garbage-first heap”</li>
+<li>Allocation Failure表明本次引起GC的原因是因为在年轻代种没有足够的空间能够存储新的数据了。</li>
+<li>[PsYoungGen: 5986-&gt;696k(8704k)] 5986k-&gt;704k(9216k)<br>中括号内：GC回收前年轻代大小，回收后大小，（年轻代总大小）<br>括号外：GC回收前年轻代和老年代大小，回收后大小，（年轻代和老年代总大小）</li>
+<li>user代表用户态回收耗时，sys内核态回收耗时，rea实际耗时，由于多核的原因，时间总和可能会超过real时间。<br><img src="https://github.com/PayneZh/MarkDownPhotos/raw/master/res/JVM-GC/MinorGC%E6%97%A5%E5%BF%97.png" alt="图19"></li>
+</ul>
+<p><img src="https://github.com/PayneZh/MarkDownPhotos/raw/master/res/JVM-GC/FullGC%E6%97%A5%E5%BF%97.jpg" alt="图20"></p>
+<p>可以用一些工具去分析这些gc日志（-Xloggc:../logs/gc.log）<br>常用的日志分析工具有:GCViewer、GCEasy、GCHisto、GCLogViewer、Hpjmeter、garbagecat等。</p>
+<h3 id="垃圾回收器的新发展"><a href="#垃圾回收器的新发展" class="headerlink" title="垃圾回收器的新发展"></a>垃圾回收器的新发展</h3>
             </div>
             <hr/>
 
